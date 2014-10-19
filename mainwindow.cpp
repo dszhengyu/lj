@@ -17,9 +17,14 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),".",tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
-    IplImage* image = cvLoadImage(fileName.toLatin1().constData());
-    IplImage* dst = cvCreateImage(cvGetSize(image),image->depth,1);
-    cvCvtColor(image,dst, CV_BGR2GRAY);
-    cvNamedWindow("111");
-    cvShowImage("111",dst);
+    IplImage* newimage = cvLoadImage(fileName.toLatin1().constData());
+    //ui->label->setPixmap(QPixmap::fromImage(Opencv2Qt::imageCvt(newimage)));
+   // ui->label->resize(newimage->width,newimage->height);
+
+    cvNamedWindow("111", 0);
+    cvShowImage("111",nclseg::seg(newimage));
+
+    cvWaitKey(0);
+    cvReleaseImage(&newimage);
+    cvDestroyAllWindows();
 }

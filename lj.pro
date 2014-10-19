@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    opencv2qt.cpp
+    opencv2qt.cpp \
+    nclseg.cpp
 
 HEADERS  += mainwindow.h \
-    opencv2qt.h
+    opencv2qt.h \
+    nclseg.h
 
 FORMS    += mainwindow.ui
 

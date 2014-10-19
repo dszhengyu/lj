@@ -1,11 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
+#include <QMainWindow>
+#include "opencv2qt.h"
 #include <highgui.h>
 #include <cv.h>
-#include "opencv2qt.h"
+#include <QDebug>
 #include <QFileDialog>
-#include <QMainWindow>
-
+#include "nclseg.h"
 namespace Ui {
 class MainWindow;
 }
