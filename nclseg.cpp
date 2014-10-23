@@ -13,138 +13,135 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* Redcell = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* BW2 = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* HSV = cvCreateImage(cvGetSize(img), img->depth, 3);
-    IplImage* S = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* Is = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* G = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* Ig = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* IE = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* e = cvCreateImage(cvGetSize(img), img->depth, 1);
-
+    IplImage* BW2IE = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
+    IplImage* water = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 3);
+    //IplImage* temp = cvCreateImage(cvGetSize(BW2IE),IPL_DEPTH_32S,1);
+    cvCopy(img, water);
 
     cvCvtColor(img, gray, CV_BGR2GRAY);
     cvThreshold(gray, BW1, 125, 255, CV_THRESH_BINARY_INV);
-    cvThreshold(gray, BJ, Otsu(gray), 255, CV_THRESH_BINARY_INV);
-    cvThreshold(nclseg::Bsplict(img), BW3, Otsu(nclseg::Bsplict(img)), 255, CV_THRESH_BINARY_INV);
+    cvThreshold(gray, BJ, analyse::Otsu(gray), 255, CV_THRESH_BINARY_INV);
+    cvThreshold(analyse::splictB(img), BW3, analyse::Otsu(analyse::splictB(img)), 255, CV_THRESH_BINARY_INV);
     cvSub(BW3, BW1, Redcell);
     cvSub(BJ, Redcell, BW2);
     cvCvtColor(img, HSV, CV_BGR2HSV);
-    S = nclseg::Ssplict(HSV);
-    G = nclseg::Gsplict(img);
-    cvEqualizeHist(S, Is);
-    cvEqualizeHist(G, Ig);
-    formIE(Is, Ig, IE);
-    cvThreshold(IE, e, 240, 255, CV_THRESH_BINARY);
+    Is = analyse::splictS(HSV);
+    Ig = analyse::splictG(img);
+    cvEqualizeHist(Is, Is);
+    cvEqualizeHist(Ig, Ig);
 
-    return e;
+    analyse::formIE(Is, Ig, IE, analyse::analyseV(img));
+    cvThreshold(IE, IE, 230, 255, CV_THRESH_BINARY);
+
+
+
+    //cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 4);
+     //cvMorphologyEx(IE, IErode, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
+     cvDilate(IE, IE, cvCreateStructuringElementEx(2, 2, 1, 1, CV_SHAPE_RECT), 5);
+     //cvMorphologyEx(IE, IErode, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
+    //cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_CLOSE);
+
+    /*
+    cvAnd(BW2, IE, BW2IE);
+
+
+    //cvScale(BW2IE, temp, 65535/255);
+   // analyse::showImg(temp, "ex-temp");
+    //cvWatershed(water, temp);
+   // analyse::showImg(temp, "temp");
+
+    //analyse::showImg(watermelon(water, BW2IE), "watershed");
+
+*/
+
+    analyse::showImg(analyse::fillHole(IE), "no-hole");
+    analyse::showImg(img, "img");
+    analyse::showImg(IE, "IE");
+    //analyse::showImg(BW2IE, "BW2IE");
+    cvWaitKey(0);
+    cvDestroyAllWindows();
+
+    return IE;
 }
 
-int nclseg::Otsu(IplImage* src)
-{
-    int height=src->height;
-    int width=src->width;
 
-    //histogram
-    float histogram[256] = {0};
-    for(int i=0; i < height; i++)
-    {
-        unsigned char* p=(unsigned char*)src->imageData + src->widthStep * i;
-        for(int j = 0; j < width; j++)
+
+
+
+
+
+
+
+
+/*
+void nclseg::cvt32to8(IplImage *src, IplImage *dst)
+{
+    int height= src->height;
+    int width = src->width;
+
+    for( int i = 0; i < src->height; i++ )
+        for( int j = 0; j < src->width; j++ )
         {
-            histogram[*p++]++;
-        }
-    }
-    //normalize histogram
-    int size = height * width;
-    for(int i = 0; i < 256; i++)
-    {
-        histogram[i] = histogram[i] / size;
-    }
+             int idx = CV_IMAGE_ELEM(src, int, i, j );
+             unsigned char* dst = &CV_IMAGE_ELEM(dst, unsigned char, i, j );
+             *dst = (unsigned char)idx/65535*255;
 
-    //average pixel value
-    float avgValue=0;
-    for(int i=0; i < 256; i++)
-    {
-        avgValue += i * histogram[i];  //整幅图像的平均灰度
-    }
+         }
 
-    int threshold;
-    float maxVariance=0;
-    float w = 0, u = 0;
-    for(int i = 0; i < 256; i++)
-    {
-        w += histogram[i];  //假设当前灰度i为阈值, 0~i 灰度的像素(假设像素值在此范围的像素叫做前景像素) 所占整幅图像的比例
-        u += i * histogram[i];  // 灰度i 之前的像素(0~i)的平均灰度值： 前景像素的平均灰度值
 
-        float t = avgValue * w - u;
-        float variance = t * t / (w * (1 - w) );
-        if(variance > maxVariance)
+}
+*/
+
+IplImage* nclseg::watermelon(IplImage *water, IplImage *BW2IE)
+{
+    IplImage* markers = cvCreateImage(cvGetSize(water), IPL_DEPTH_32S, 1);
+    IplImage* watershed = cvCreateImage(cvGetSize(water), IPL_DEPTH_8U, 3);
+    cvCopy(water, watershed);
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    cvZero(watershed);
+    cvZero(markers);
+    CvSeq* contours = 0;
+    CvMat* color_tab = 0;
+    CvRNG rng = cvRNG(-1);
+    int i, j, comp_count = 0;
+    cvClearMemStorage(storage);
+
+    cvFindContours( BW2IE, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+    for( ; contours != 0; contours = contours->h_next, comp_count++ )
+        cvDrawContours(markers, contours, cvScalarAll(comp_count+1), cvScalarAll(comp_count+1), -1, -1, 8, cvPoint(0,0) );
+
+    color_tab = cvCreateMat( 1, comp_count, CV_8UC3 );
+    for( i = 0; i < comp_count; i++ )
+    {
+        uchar* ptr = color_tab->data.ptr + i*3;
+        ptr[0] = (uchar)(cvRandInt(&rng)%180 + 50);
+        ptr[1] = (uchar)(cvRandInt(&rng)%180 + 50);
+        ptr[2] = (uchar)(cvRandInt(&rng)%180 + 50);
+     }
+
+     cvWatershed(water, markers );
+     //cvSave("markers.xml",markers);
+
+     for( i = 0; i < markers->height; i++ )
+        for( j = 0; j < markers->width; j++ )
         {
-            maxVariance = variance;
-            threshold = i;
-        }
-    }
+            int idx = CV_IMAGE_ELEM( markers, int, i, j );
+            uchar* dst = &CV_IMAGE_ELEM( watershed, uchar, i, j*3 );
+            if( idx == -1 )
+                 dst[0] = dst[1] = dst[2] = (uchar)255;
+            else if( idx <= 0 || idx > comp_count )
+                 dst[0] = dst[1] = dst[2] = (uchar)0;
+            else {
+                 uchar* ptr = color_tab->data.ptr + (idx-1)*3;
+                 dst[0] = ptr[0]; dst[1] = ptr[1]; dst[2] = ptr[2];
+                 }
+         }
+     //cvAddWeighted( watershed, 0.5, img_gray, 0.5, 0, watershed );
 
-    return threshold;
-}
-
-IplImage* nclseg::Bsplict(const IplImage* img)
-{
-    IplImage* b = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* g = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* r = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    cvSplit(img, b, g, r, 0);
-
-    return b;
-}
-
-IplImage* nclseg::Ssplict(const IplImage* img)
-{
-    IplImage* h = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* s = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* v = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    cvSplit(img, h, s, v, 0);
-
-    return s;
-}
-
-IplImage* nclseg::Gsplict(const IplImage* img)
-{
-    IplImage* b = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* g = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* r = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    cvSplit(img, b, g, r, 0);
-
-    return g;
-}
-
-void nclseg::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE)
-{
-    IplImage* IsDivIg = cvCreateImage(cvGetSize(Is), IPL_DEPTH_8U, 1);
-    unsigned char T = (unsigned char)Otsu(Ig);
-
-    //T!!!!
-
-    T = 230;
-    int height= IE->height;
-    int width = IE->width;
-
-    cvDiv(Is, Ig, IsDivIg);
-
-    for(int i = 0; i < height; i++)
-    {
-        unsigned char* E=(unsigned char*)IE->imageData + IE->widthStep * i;
-        unsigned char* g=(unsigned char*)Ig->imageData + Ig->widthStep * i;
-        unsigned char* s=(unsigned char*)Is->imageData + Is->widthStep * i;
-        unsigned char* sdivg=(unsigned char*)IsDivIg->imageData + IsDivIg->widthStep * i;
-        for(int j = 0; j < width; j++)
-        {
-            *E = (*g > T ? *s : *sdivg);
-            *E = (*g > T ? 0 : *sdivg);
-            ++E;
-            ++g;
-            ++s;
-            ++sdivg;
-        }
-    }
+     return watershed;
 
 }
+

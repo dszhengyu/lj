@@ -21,10 +21,5 @@ void MainWindow::on_pushButton_clicked()
     //ui->label->setPixmap(QPixmap::fromImage(Opencv2Qt::imageCvt(newimage)));
    // ui->label->resize(newimage->width,newimage->height);
 
-    cvNamedWindow("111", 0);
-    cvShowImage("111",nclseg::seg(newimage));
-
-    cvWaitKey(0);
-    cvReleaseImage(&newimage);
-    cvDestroyAllWindows();
+    nclseg::seg(newimage);
 }

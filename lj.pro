@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     opencv2qt.cpp \
-    nclseg.cpp
+    nclseg.cpp \
+    analyse.cpp
 
 HEADERS  += mainwindow.h \
     opencv2qt.h \
-    nclseg.h
+    nclseg.h \
+    analyse.h
 
 FORMS    += mainwindow.ui
 
