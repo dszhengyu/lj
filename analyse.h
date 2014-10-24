@@ -19,6 +19,8 @@ public:
     static IplImage* fillHole(IplImage* hole);
     static int Otsu(IplImage* src);
     static void showImg(IplImage* img, char *s);
+    static void  MaxEntropy(IplImage *src,IplImage *dst);
+    static IplImage* analyseCoutours(IplImage* img);
 };
 
 #endif // ANALYSE_H

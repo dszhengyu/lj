@@ -39,6 +39,7 @@ IplImage* analyse::analyseHist(IplImage *channel, int *ptr_max_index)
             cvPoint((i+1)*scale - 1, hist_height - intensity),
             CV_RGB(255,255,255));
     }
+    //analyse::showImg(hist_image, "hist_image");
     return hist_image;
 
 }
@@ -77,10 +78,12 @@ void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
 {
     IplImage* IsDivIg = cvCreateImage(cvGetSize(Is), IPL_DEPTH_8U, 1);
 
-    if (T > 200)
-        T = 1;
+    if (T > 250)//choose the T value according to the V-channel of the picture.
+        T = 2;//there maybe exist a function could apply to all the picture to calculate the T value
+    else if (T > 200)
+            T = 3;
     else
-        T = 150;
+        T = 45;
 
     int height= IE->height;
     int width = IE->width;
@@ -95,7 +98,7 @@ void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
         unsigned char* sdivg=(unsigned char*)IsDivIg->imageData + IsDivIg->widthStep * i;
         for(int j = 0; j < width; j++)
         {
-            *E = (*g < T ? *s : *sdivg);
+            *E = (*g < T ? *s: *sdivg);
             ++E;
             ++g;
             ++s;
@@ -111,9 +114,7 @@ IplImage* analyse::fillHole(IplImage *hole)
     IplImage* temp = cvCreateImage(cvGetSize(hole), IPL_DEPTH_8U, 1);
     cvCopy(hole, temp);
     cvFloodFill(temp, cvPoint(0, 0), cvScalarAll(255));
-    showImg(temp, "temp");
     cvNot(temp, temp);
-    showImg(temp, "temp2");
     cvAdd(hole, temp, hole);
     return hole;
 }
@@ -173,3 +174,95 @@ void analyse::showImg(IplImage *img, char *s)
     cvShowImage(s, img);
 }
 
+IplImage* analyse::analyseCoutours(IplImage *img)
+{
+    IplImage* pic = cvCreateImage(cvGetSize(img), 8, 1);
+    cvCopy(img, pic);
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    CvSeq* contours = 0;
+    cvFindContours(pic, storage, &contours, sizeof(CvContour), CV_RETR_EXTERNAL);
+    cvZero(pic);
+    if (contours) {
+        CvSeq* c = contours;
+        int i = 0;
+        for (c = c->h_next; c != NULL; c = c->h_next) {
+            cvDrawContours(pic, c, cvScalar(255), cvScalarAll(255), 100, 3);
+            qDebug("i = %d, area = %f", ++i, cvContourArea(c));
+            cvWaitKey(0);
+            analyse::showImg(pic, "testing");
+        }
+
+    }
+    return pic;
+}
+
+/*============================================================================
+=  代码内容：最大熵阈值分割
+=  修改日期:2009-3-3
+=  作者:crond123
+=  博客:http://blog.csdn.net/crond123/
+=  E_Mail:crond123@163.com
+===============================================================================
+// 计算当前位置的能量熵
+double caculateCurrentEntropy(CvHistogram * Histogram1,int cur_threshold,int state)
+{
+int start,end;
+int  total =0;
+double cur_entropy =0.0;
+if(state == 0)
+    {
+        start =0;
+        end = cur_threshold;
+    }
+else
+    {
+        start = cur_threshold;
+        end =256;
+    }
+for(int i=start;i<end;i++)
+    {
+        total += (int)cvQueryHistValue_1D(Histogram1,i);//查询直方块的值 P304
+    }
+for(int j=start;j<end;j++)
+    {
+if((int)cvQueryHistValue_1D(Histogram1,j)==0)
+continue;
+double percentage = cvQueryHistValue_1D(Histogram1,j)/total;
+//熵的定义公式
+        cur_entropy +=-percentage*logf(percentage);
+//根据泰勒展式去掉高次项得到的熵的近似计算公式
+        //cur_entropy += percentage*percentage;
+    }
+return cur_entropy;
+//    return (1-cur_entropy);
+}
+
+//寻找最大熵阈值并分割
+void  analyse::MaxEntropy(IplImage *src,IplImage *dst)
+{
+    assert(src != NULL);
+    assert(src->depth ==8&& dst->depth ==8);
+    assert(src->nChannels ==1);
+    int HistogramBins = 256;
+    float range[] = {0,255};
+    float* ranges[]={range};
+    CvHistogram * hist  = cvCreateHist(1,&HistogramBins,CV_HIST_ARRAY,ranges);//创建一个指定尺寸的直方图
+//参数含义：直方图包含的维数、直方图维数尺寸的数组、直方图的表示格式、方块范围数组、归一化标志
+    cvCalcHist(&src,hist);//计算直方图
+double maxentropy =-1.0;
+int max_index =-1;
+// 循环测试每个分割点，寻找到最大的阈值分割点
+for(int i=0;i<HistogramBins;i++)
+    {
+double cur_entropy = caculateCurrentEntropy(hist,i,1)+caculateCurrentEntropy(hist,i,0);
+if(cur_entropy>maxentropy)
+        {
+            maxentropy = cur_entropy;
+            max_index = i;
+        }
+    }
+    cvThreshold(src, dst, (double)max_index,255, CV_THRESH_BINARY);
+    cvReleaseHist(&hist);
+}
+
+*/

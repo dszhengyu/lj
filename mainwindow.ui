@@ -27,19 +27,6 @@
      <string>打开图片</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>40</y>
-      <width>431</width>
-      <height>391</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -50,12 +37,6 @@
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuLJ">
-    <property name="title">
-     <string>LJ</string>
-    </property>
-   </widget>
-   <addaction name="menuLJ"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

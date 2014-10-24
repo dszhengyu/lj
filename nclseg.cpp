@@ -32,17 +32,23 @@ IplImage* nclseg::seg(IplImage* img)
     Ig = analyse::splictG(img);
     cvEqualizeHist(Is, Is);
     cvEqualizeHist(Ig, Ig);
-
     analyse::formIE(Is, Ig, IE, analyse::analyseV(img));
-    cvThreshold(IE, IE, 230, 255, CV_THRESH_BINARY);
 
-
+    //the T should be chosen more adaptive
+    cvThreshold(IE, IE, 220, 255, CV_THRESH_BINARY);
 
     //cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 4);
-     //cvMorphologyEx(IE, IErode, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
-     cvDilate(IE, IE, cvCreateStructuringElementEx(2, 2, 1, 1, CV_SHAPE_RECT), 5);
-     //cvMorphologyEx(IE, IErode, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
-    //cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_CLOSE);
+     //cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
+    // cvDilate(IE, IE, cvCreateStructuringElementEx(2, 2, 1, 1, CV_SHAPE_RECT), 5);
+     //cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
+
+    cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 3);
+    cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_CLOSE, 10);
+    analyse::fillHole(IE);
+    cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 3);
+    analyse::showImg(IE, "IE");
+    analyse::showImg(analyse::analyseCoutours(IE), "contours");
+
 
     /*
     cvAnd(BW2, IE, BW2IE);
@@ -57,9 +63,9 @@ IplImage* nclseg::seg(IplImage* img)
 
 */
 
-    analyse::showImg(analyse::fillHole(IE), "no-hole");
+
     analyse::showImg(img, "img");
-    analyse::showImg(IE, "IE");
+
     //analyse::showImg(BW2IE, "BW2IE");
     cvWaitKey(0);
     cvDestroyAllWindows();
