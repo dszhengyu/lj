@@ -10,6 +10,7 @@
 #include "analyse.h"
 #include "opencv2qt.h"
 
+
 namespace Ui {
 class MainWindow;
 }

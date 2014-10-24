@@ -10,7 +10,7 @@ int analyse::analyseV(IplImage *img)
     int max_index = 0;
     cvSplit(img, 0, 0, v, 0);
     analyseHist(v, &max_index);
-    qDebug("%d", max_index);
+    //qDebug("%d", max_index);
     return max_index;
 }
 
@@ -183,24 +183,63 @@ IplImage* analyse::analyseCoutours(IplImage *img)
     cvFindContours(pic, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
     cvZero(pic);
     if (contours) {
-        int key;
+        //int key;
         CvSeq* c = contours;
-        int i = 0;
+        //int i = 0;
         analyse::showImg(pic, "testing");
-        cvWaitKey(0);
+       // cvWaitKey(0);
         for (; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 2000) continue;
             cvDrawContours(pic, c, cvScalar(255), cvScalarAll(125), 0, -1);
-            qDebug("i = %d, area = %f, perimeter = %f", ++i, cvContourArea(c), cvArcLength(c));
+            //qDebug("i = %d, area = %f, perimeter = %f", ++i, cvContourArea(c), cvArcLength(c));
             CvRect rect = cvBoundingRect(c,0);
             cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 3, 8, 0);
-            analyse::showImg(pic, "testing");
-            if ((key = cvWaitKey(0))== 27) break;
+            //analyse::showImg(pic, "testing");
+            //if ((key = cvWaitKey(0))== 27) break;
         }
-
+        analyse::showImg(pic, "testing");
     }
     return pic;
 }
+
+int analyse::analyseCoutours2Circle(IplImage* src, IplImage* dst, struct point* Point)
+{
+    struct circle {
+        CvPoint2D32f center;
+        float radius = 255;
+    } a_circle;
+    float rmin = 255;
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    CvSeq* contours = 0;
+    cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
+    cvZero(dst);
+    if (contours) {
+        int key;
+        CvSeq* c = contours;
+        analyse::showImg(dst, "circle");
+        cvWaitKey(0);
+        for (; c != NULL; c = c->h_next) {
+            if (cvContourArea(c) < 2000) continue;
+            struct point *temp;
+            temp = (struct point *)malloc(sizeof(struct point));
+            Point->next = temp;
+            Point = temp;
+            cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, -1);
+            cvMinEnclosingCircle(c, &a_circle.center, &a_circle.radius);
+            rmin = ((rmin < a_circle.radius) ? rmin : a_circle.radius);
+            cvCircle(dst, Point->ciclepoint = cvPoint((int)a_circle.center.x,(int)a_circle.center.y), (int)a_circle.radius, cvScalarAll(255), -1);
+            analyse::showImg(dst, "circle");
+            //qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
+            //if ((key = cvWaitKey(0))== 27) break;
+        }
+        Point->next = NULL;
+
+    }
+   // analyse::showImg(dst, "circle");
+    //qDebug("%f", rmin);
+    return (int)rmin;
+}
+
 
 //Attention ! unused!
 IplImage* analyse::analyseCoutours1by1(IplImage* img)
@@ -296,3 +335,20 @@ if(cur_entropy>maxentropy)
 }
 
 */
+
+int analyse::analyseMaxvalue(IplImage* img)
+{
+    int height, width, max;
+    height = img->height;
+    width = img->width;
+    max = 0;
+    for (int i = 0; i < height; ++i) {
+        int key = i * img->widthStep;
+        for (int j = 0; j < width; ++j) {
+            int k = img->imageData[j + key];
+            max = (max > k) ? max : k;
+        }
+    }
+    qDebug("%d", max);
+    return max;
+}

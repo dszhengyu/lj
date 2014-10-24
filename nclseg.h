@@ -15,4 +15,10 @@ public:
     static IplImage* watermelon(IplImage* water, IplImage* BW2IE);
     static void cvt32to8(IplImage* src, IplImage* dst);
 };
+struct point {
+    CvPoint ciclepoint;
+    struct point *next;
+};
+
+
 #endif // NCLSEG_H

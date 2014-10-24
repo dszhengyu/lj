@@ -16,9 +16,16 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* Is = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* Ig = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* IE = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* BW2IE = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
+    IplImage* im = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* circles = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* dist = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* water = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 3);
-    //IplImage* temp = cvCreateImage(cvGetSize(BW2IE),IPL_DEPTH_32S,1);
+    int disthresh = 0;
+    struct point *Point;
+    Point = (struct point *)malloc(sizeof(struct point));
+    Point->ciclepoint = cvPoint(-1, -1), Point->next = NULL;
+
+    //IplImage* temp = cvCreateImage(cvGetSize(im),IPL_DEPTH_32S,1);
    // cvCopy(img, water);
 
     analyse::showImg(img, "img");
@@ -34,39 +41,24 @@ IplImage* nclseg::seg(IplImage* img)
     cvEqualizeHist(Is, Is);
     cvEqualizeHist(Ig, Ig);
     analyse::formIE(Is, Ig, IE, analyse::analyseV(img));
-
-    //the T should be chosen more adaptive
     cvThreshold(IE, IE, 220, 255, CV_THRESH_BINARY);
-
-    //cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 4);
-     //cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
-    // cvDilate(IE, IE, cvCreateStructuringElementEx(2, 2, 1, 1, CV_SHAPE_RECT), 5);
-     //cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 2);
-
     cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_OPEN, 3);
     cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_CLOSE, 10);
     analyse::fillHole(IE);
     cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 3);
-    analyse::showImg(IE, "IE");
 
     analyse::analyseCoutours(IE);
-
-
-    /*
-    cvAnd(BW2, IE, BW2IE);
-
-
-    //cvScale(BW2IE, temp, 65535/255);
-   // analyse::showImg(temp, "ex-temp");
-    //cvWatershed(water, temp);
-   // analyse::showImg(temp, "temp");
-
-    //analyse::showImg(watermelon(water, BW2IE), "watershed");
-
-*/
-
-    //analyse::showImg(BW2IE, "BW2IE");
-    //cvWaitKey(0);
+    disthresh = analyse::analyseCoutours2Circle(IE, circles, Point);
+    while (Point = Point->next)
+        qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
+    cvDistTransform(circles, dist, CV_DIST_L1);
+    analyse::showImg(dist, "dist-EX");
+    cvThreshold(dist, dist, disthresh, 255, CV_THRESH_BINARY);
+    analyse::showImg(dist, "dist");
+    cvAnd(BW2, IE, im);
+    //analyse::showImg(im, "im");
+    //analyse::showImg(BW2, "BW2");
+    cvWaitKey(0);
     cvDestroyAllWindows();
 
     return IE;
@@ -100,7 +92,7 @@ void nclseg::cvt32to8(IplImage *src, IplImage *dst)
 }
 */
 
-IplImage* nclseg::watermelon(IplImage *water, IplImage *BW2IE)
+IplImage* nclseg::watermelon(IplImage *water, IplImage *im)
 {
     IplImage* markers = cvCreateImage(cvGetSize(water), IPL_DEPTH_32S, 1);
     IplImage* watershed = cvCreateImage(cvGetSize(water), IPL_DEPTH_8U, 3);
@@ -114,7 +106,7 @@ IplImage* nclseg::watermelon(IplImage *water, IplImage *BW2IE)
     int i, j, comp_count = 0;
     cvClearMemStorage(storage);
 
-    cvFindContours( BW2IE, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+    cvFindContours( im, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
     for( ; contours != 0; contours = contours->h_next, comp_count++ )
         cvDrawContours(markers, contours, cvScalarAll(comp_count+1), cvScalarAll(comp_count+1), -1, -1, 8, cvPoint(0,0) );
 
