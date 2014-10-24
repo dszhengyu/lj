@@ -19,8 +19,9 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* BW2IE = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
     IplImage* water = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 3);
     //IplImage* temp = cvCreateImage(cvGetSize(BW2IE),IPL_DEPTH_32S,1);
-    cvCopy(img, water);
+   // cvCopy(img, water);
 
+    analyse::showImg(img, "img");
     cvCvtColor(img, gray, CV_BGR2GRAY);
     cvThreshold(gray, BW1, 125, 255, CV_THRESH_BINARY_INV);
     cvThreshold(gray, BJ, analyse::Otsu(gray), 255, CV_THRESH_BINARY_INV);
@@ -47,7 +48,8 @@ IplImage* nclseg::seg(IplImage* img)
     analyse::fillHole(IE);
     cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 3);
     analyse::showImg(IE, "IE");
-    analyse::showImg(analyse::analyseCoutours(IE), "contours");
+
+    analyse::analyseCoutours(IE);
 
 
     /*
@@ -63,11 +65,8 @@ IplImage* nclseg::seg(IplImage* img)
 
 */
 
-
-    analyse::showImg(img, "img");
-
     //analyse::showImg(BW2IE, "BW2IE");
-    cvWaitKey(0);
+    //cvWaitKey(0);
     cvDestroyAllWindows();
 
     return IE;

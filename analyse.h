@@ -21,6 +21,8 @@ public:
     static void showImg(IplImage* img, char *s);
     static void  MaxEntropy(IplImage *src,IplImage *dst);
     static IplImage* analyseCoutours(IplImage* img);
+    static IplImage* analyseCoutours1by1(IplImage* img);
+
 };
 
 #endif // ANALYSE_H

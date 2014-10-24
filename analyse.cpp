@@ -180,19 +180,49 @@ IplImage* analyse::analyseCoutours(IplImage *img)
     cvCopy(img, pic);
     CvMemStorage* storage = cvCreateMemStorage(0);
     CvSeq* contours = 0;
-    cvFindContours(pic, storage, &contours, sizeof(CvContour), CV_RETR_EXTERNAL);
+    cvFindContours(pic, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
     cvZero(pic);
     if (contours) {
+        int key;
         CvSeq* c = contours;
         int i = 0;
-        for (c = c->h_next; c != NULL; c = c->h_next) {
-            cvDrawContours(pic, c, cvScalar(255), cvScalarAll(255), 100, 3);
-            qDebug("i = %d, area = %f", ++i, cvContourArea(c));
-            cvWaitKey(0);
+        analyse::showImg(pic, "testing");
+        cvWaitKey(0);
+        for (; c != NULL; c = c->h_next) {
+            if (cvContourArea(c) < 2000) continue;
+            cvDrawContours(pic, c, cvScalar(255), cvScalarAll(125), 0, 3);
+            qDebug("i = %d, area = %f, perimeter = %f", ++i, cvContourArea(c), cvArcLength(c));
+            CvRect rect = cvBoundingRect(c,0);
+            cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 3, 8, 0);
             analyse::showImg(pic, "testing");
+            if ((key = cvWaitKey(0))== 27) break;
         }
 
     }
+    return pic;
+}
+
+//Attention ! unused!
+IplImage* analyse::analyseCoutours1by1(IplImage* img)
+{
+    IplImage* pic = cvCreateImage(cvGetSize(img), 8, 1);
+    cvCopy(img, pic);
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    CvSeq* contours = 0;
+    CvContourScanner scanner = cvStartFindContours(pic, storage);
+    cvZero(pic);
+    int key;
+    do {
+        if ((key = cvWaitKey(0))== 27) break;
+        contours = cvFindNextContour(scanner);
+        cvDrawContours(pic, contours, cvScalarAll(255), cvScalarAll(255), 0, 3, -1);
+        CvRect rect = cvBoundingRect(contours,0);
+        cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 2, 8, 0);
+        analyse::showImg(pic, "testing");
+        qDebug("there");
+    } while (contours);
+    cvEndFindContours(&scanner);
+
     return pic;
 }
 
