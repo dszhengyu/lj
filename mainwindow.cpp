@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Leukocyte Nucleus");
 }
 
 MainWindow::~MainWindow()
@@ -22,4 +23,5 @@ void MainWindow::on_pushButton_clicked()
    // ui->label->resize(newimage->width,newimage->height);
 
     nclseg::seg(newimage);
+
 }

@@ -25,6 +25,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+RC_ICONS = microscope.ico
+
 INCLUDEPATH += Z:\lj\opencv\build\include\
 Z:\lj\opencv\build\include\opencv\
 Z:\lj\opencv\build\include\opencv2

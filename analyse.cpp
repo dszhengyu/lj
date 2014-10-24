@@ -81,7 +81,7 @@ void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
     if (T > 250)//choose the T value according to the V-channel of the picture.
         T = 2;//there maybe exist a function could apply to all the picture to calculate the T value
     else if (T > 200)
-            T = 3;
+            T = 4;
     else
         T = 45;
 
@@ -190,7 +190,7 @@ IplImage* analyse::analyseCoutours(IplImage *img)
         cvWaitKey(0);
         for (; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 2000) continue;
-            cvDrawContours(pic, c, cvScalar(255), cvScalarAll(125), 0, 3);
+            cvDrawContours(pic, c, cvScalar(255), cvScalarAll(125), 0, -1);
             qDebug("i = %d, area = %f, perimeter = %f", ++i, cvContourArea(c), cvArcLength(c));
             CvRect rect = cvBoundingRect(c,0);
             cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 3, 8, 0);
