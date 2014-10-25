@@ -19,6 +19,7 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* im = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* circles = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* ellipse = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* approxpoly = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* water = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 3);
 
@@ -46,13 +47,15 @@ IplImage* nclseg::seg(IplImage* img)
     cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 3);
     cvAnd(BW2, IE, im);
 
-    analyse::showImg(BW2, "BW2");
+    //analyse::showImg(BW2, "BW2");
     em = analyse::analyseCoutours(BW2);
     analyse::lighten(em);
-//    cvCircle(em, cvPoint(2079, 1263), 10, cvScalarAll(255), -1);
     analyse::showImg(em, "em");
 
-    analyse::analyseCoutours2Ellipse(im, ellipse, Point);
+   // analyse::analyseCoutours2Ellipse(im, ellipse, Point);
+    analyse::analyseCoutours2ApproxPoly(im, approxpoly, Point);
+    qDebug("oooooh");
+/*
     while (Point = Point->next) {
         if (cvWaitKey(0) == 27) break;
         qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
@@ -60,8 +63,8 @@ IplImage* nclseg::seg(IplImage* img)
         analyse::showImg(em, "em");
     }
     cvWaitKey(0);
-
-    analyse::showImg(em, "em");
+*/
+    //analyse::showImg(em, "em");
 
  /*   //free the list
     struct point *temp = Point;
