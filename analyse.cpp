@@ -180,7 +180,7 @@ IplImage* analyse::analyseCoutours(IplImage *img)
     cvCopy(img, pic);
     CvMemStorage* storage = cvCreateMemStorage(0);
     CvSeq* contours = 0;
-    cvFindContours(pic, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
+    cvFindContours(pic, storage, &contours, sizeof(CvContour), CV_RETR_LIST);
     cvZero(pic);
     if (contours) {
         //int key;
@@ -193,11 +193,11 @@ IplImage* analyse::analyseCoutours(IplImage *img)
             cvDrawContours(pic, c, cvScalar(255), cvScalarAll(125), 0, -1);
             //qDebug("i = %d, area = %f, perimeter = %f", ++i, cvContourArea(c), cvArcLength(c));
             CvRect rect = cvBoundingRect(c,0);
-            cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 3, 8, 0);
+            //cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 3, 8, 0);
             //analyse::showImg(pic, "testing");
             //if ((key = cvWaitKey(0))== 27) break;
         }
-        analyse::showImg(pic, "testing");
+        //analyse::showImg(pic, "testing");
     }
     return pic;
 }
@@ -217,7 +217,7 @@ int analyse::analyseCoutours2Circle(IplImage* src, IplImage* dst, struct point* 
         int key;
         CvSeq* c = contours;
         analyse::showImg(dst, "circle");
-        cvWaitKey(0);
+        //cvWaitKey(0);
         for (; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 2000) continue;
             struct point *temp;
@@ -228,18 +228,56 @@ int analyse::analyseCoutours2Circle(IplImage* src, IplImage* dst, struct point* 
             cvMinEnclosingCircle(c, &a_circle.center, &a_circle.radius);
             rmin = ((rmin < a_circle.radius) ? rmin : a_circle.radius);
             cvCircle(dst, Point->ciclepoint = cvPoint((int)a_circle.center.x,(int)a_circle.center.y), (int)a_circle.radius, cvScalarAll(255), -1);
-            analyse::showImg(dst, "circle");
+           // analyse::showImg(dst, "circle");
             //qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
             //if ((key = cvWaitKey(0))== 27) break;
         }
         Point->next = NULL;
 
     }
-   // analyse::showImg(dst, "circle");
+    analyse::showImg(dst, "circle");
     //qDebug("%f", rmin);
     return (int)rmin;
 }
 
+void analyse::analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point *Point)
+{
+    CvBox2D box;
+    int x, y;
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    CvSeq* contours = 0;
+    cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
+    cvZero(dst);
+    if (contours) {
+        int key;
+        CvSeq* c = contours;
+        analyse::showImg(dst, "ellipse");
+        cvWaitKey(0);
+        for (; c != NULL; c = c->h_next) {
+            if (cvContourArea(c) < 2000) continue;
+            cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, -1);
+
+            //insert the point in the list
+            struct point *temp;
+            temp = (struct point *)malloc(sizeof(struct point));
+            Point->next = temp;
+            Point = temp;
+            box = cvFitEllipse2(c);
+            x = ((int)box.center.x > dst->width ? dst->width - 3: (int)box.center.x);//x and y may out of range!
+            y = ((int)box.center.y > dst->height ? dst->height - 3: (int)box.center.y);
+            Point->ciclepoint = cvPoint(x, y);
+
+            //draw the ellipse in the dst
+            cvEllipseBox(dst, box, cvScalarAll(255), 3);
+            analyse::showImg(dst, "ellipse");
+            qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
+            //if ((key = cvWaitKey(0))== 27) break;
+        }
+        Point->next = NULL;
+
+    }
+    analyse::showImg(dst, "ellipse");
+}
 
 //Attention ! unused!
 IplImage* analyse::analyseCoutours1by1(IplImage* img)
@@ -351,4 +389,20 @@ int analyse::analyseMaxvalue(IplImage* img)
     }
     qDebug("%d", max);
     return max;
+}
+
+void analyse::lighten(IplImage* img)
+{
+    int height, width, step, key;
+    height = img->height;
+    width = img->width;
+    step = img->widthStep;
+    for (int i = 0; i < height; ++i) {
+        key = i * step;
+        for (int j = 0; j < width; ++j) {
+            int data = img->imageData[j + key];
+            data = (data ? 150 : 0);
+            img->imageData[j + key] = data;
+        }
+    }
 }
