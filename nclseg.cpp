@@ -18,15 +18,13 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* IE = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* im = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* circles = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* dist = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* ellipse = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* water = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 3);
-    int disthresh = 0;
+
     struct point *Point;
     Point = (struct point *)malloc(sizeof(struct point));
     Point->ciclepoint = cvPoint(-1, -1), Point->next = NULL;
-
-    //IplImage* temp = cvCreateImage(cvGetSize(im),IPL_DEPTH_32S,1);
-   // cvCopy(img, water);
 
     analyse::showImg(img, "img");
     cvCvtColor(img, gray, CV_BGR2GRAY);
@@ -46,18 +44,33 @@ IplImage* nclseg::seg(IplImage* img)
     cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), CV_MOP_CLOSE, 10);
     analyse::fillHole(IE);
     cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 3);
-
-    analyse::analyseCoutours(IE);
-    disthresh = analyse::analyseCoutours2Circle(IE, circles, Point);
-    while (Point = Point->next)
-        qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
-    cvDistTransform(circles, dist, CV_DIST_L1);
-    analyse::showImg(dist, "dist-EX");
-    cvThreshold(dist, dist, disthresh, 255, CV_THRESH_BINARY);
-    analyse::showImg(dist, "dist");
     cvAnd(BW2, IE, im);
-    //analyse::showImg(im, "im");
-    //analyse::showImg(BW2, "BW2");
+
+    analyse::showImg(BW2, "BW2");
+    em = analyse::analyseCoutours(BW2);
+    analyse::lighten(em);
+//    cvCircle(em, cvPoint(2079, 1263), 10, cvScalarAll(255), -1);
+    analyse::showImg(em, "em");
+
+    analyse::analyseCoutours2Ellipse(im, ellipse, Point);
+    while (Point = Point->next) {
+        if (cvWaitKey(0) == 27) break;
+        qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
+        cvFloodFill(em, Point->ciclepoint, cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
+        analyse::showImg(em, "em");
+    }
+    cvWaitKey(0);
+
+    analyse::showImg(em, "em");
+
+ /*   //free the list
+    struct point *temp = Point;
+    while (temp = Point->next) {
+        free(Point);
+        Point = temp;
+    }
+
+*/
     cvWaitKey(0);
     cvDestroyAllWindows();
 

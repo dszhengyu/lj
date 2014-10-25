@@ -22,8 +22,10 @@ public:
     static void  MaxEntropy(IplImage *src,IplImage *dst);
     static IplImage* analyseCoutours(IplImage* img);
     static int analyseCoutours2Circle(IplImage* src, IplImage* dst, struct point *Point);
+    static void analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point *Point);
     static IplImage* analyseCoutours1by1(IplImage* img);
     static int analyseMaxvalue(IplImage* img);
+    static void lighten(IplImage* img);
 };
 
 
