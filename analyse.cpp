@@ -293,14 +293,12 @@ void analyse::analyseCoutours2ApproxPoly(IplImage* src, IplImage* dst, struct po
 
         int x, y, count, i;
         CvPoint point;
-        CvPoint *ptr_point = (CvPoint*)malloc(sizeof(CvPoint) * 8);
 
         analyse::showImg(dst, "approxpoly");
         cvWaitKey(0);
+        struct point *temp;
         for (; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 2000) continue;
-
-
 
 
             cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, 1);
@@ -308,41 +306,31 @@ void analyse::analyseCoutours2ApproxPoly(IplImage* src, IplImage* dst, struct po
             approxpoly = cvApproxPoly(c, sizeof(CvContour), storage2, CV_POLY_APPROX_DP, 30, 0);
             cvDrawContours(dst, approxpoly, cvScalar(255), cvScalarAll(125), 0, 5);
 
-
             //insert the point in the list
-            struct point *temp;
             temp = (struct point *)malloc(sizeof(struct point));
-            Point->next = temp;
-            Point = temp;
-
-            x = y = count = 0;
-            for (i = 0; i < 6; ++i) {
-                ptr_point[i].x = -1;
-                ptr_point[i].y = -1;
+            if(temp != NULL) {
+                Point->next = temp;
+                Point = temp;
             }
-            cvCvtSeqToArray(approxpoly, ptr_point);
-            for (i = 0; i < 6; ++i) {
-                x += ptr_point[i].x;
-                y += ptr_point[i].y;
-                if ((ptr_point[i].x > 0) && (ptr_point[i].y > 0)) ++count;
-            }
-            point.x = x / count;
-            point.y = y / count;
-            Point->ciclepoint = point;
+            else qDebug("OUT OF SPACE");
+            Point->ciclepoint = analyse::cvtContour1Point(approxpoly);
 
-            qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
+            temp = (struct point *)malloc(sizeof(struct point));
+            if(temp != NULL) {
+                Point->next = temp;
+                Point = temp;
+            }
+            else qDebug("OUT OF SPACE");
+            Point->ciclepoint = analyse::cvtContour11Point(approxpoly);
+
+
             analyse::showImg(dst, "approxpoly");
-
-
 
             if ((key = cvWaitKey(0))== 27) break;
         }
 
         Point->next = NULL;
-        free(ptr_point);
-        ptr_point = NULL;
 
-        qDebug("!!!here");
     }
 }
 
@@ -478,7 +466,7 @@ CvPoint analyse::cvtContour2Point(CvSeq* contour)
 {
     int x, y, count, i;
     CvPoint point;
-    CvPoint *ptr_point = (CvPoint*)malloc(sizeof(CvPoint) * 6);
+    CvPoint ptr_point[10];
     x = y = count = 0;
     for (i = 0; i < 6; ++i) {
         ptr_point[i].x = -1;
@@ -486,12 +474,33 @@ CvPoint analyse::cvtContour2Point(CvSeq* contour)
     }
     cvCvtSeqToArray(contour, ptr_point);
     for (i = 0; i < 6; ++i) {
-        x += ptr_point[i].x;
-        y += ptr_point[i].y;
-        if ((ptr_point[i].x > 0) && (ptr_point[i].y > 0)) ++count;
+        if ((ptr_point[i].x > 0) && (ptr_point[i].y > 0)) {
+            x += ptr_point[i].x;
+            y += ptr_point[i].y;
+             ++count;
+        }
     }
     point.x = x / count;
     point.y = y / count;
-    free(ptr_point);
+    return point;
+}
+
+CvPoint analyse::cvtContour1Point(CvSeq *contour)
+{
+    CvPoint point;
+    CvPoint ptr_point[10];
+    cvCvtSeqToArray(contour, ptr_point);
+    point.x = ptr_point[0].x;
+    point.y = ptr_point[0].y;
+    return point;
+}
+
+CvPoint analyse::cvtContour11Point(CvSeq *contour)
+{
+    CvPoint point;
+    CvPoint ptr_point[10];
+    cvCvtSeqToArray(contour, ptr_point);
+    point.x = ptr_point[1].x;
+    point.y = ptr_point[1].y;
     return point;
 }

@@ -28,6 +28,8 @@ public:
     static int analyseMaxvalue(IplImage* img);
     static void lighten(IplImage* img);
     static CvPoint cvtContour2Point(CvSeq *contour);
+    static CvPoint cvtContour1Point(CvSeq *contour);
+    static CvPoint cvtContour11Point(CvSeq *contour);
 };
 
 

@@ -47,15 +47,15 @@ IplImage* nclseg::seg(IplImage* img)
     cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 3);
     cvAnd(BW2, IE, im);
 
-    //analyse::showImg(BW2, "BW2");
     em = analyse::analyseCoutours(BW2);
     analyse::lighten(em);
     analyse::showImg(em, "em");
 
-   // analyse::analyseCoutours2Ellipse(im, ellipse, Point);
+    analyse::showImg(im, "im");
     analyse::analyseCoutours2ApproxPoly(im, approxpoly, Point);
-    qDebug("oooooh");
-/*
+
+    struct point *temp = Point;
+
     while (Point = Point->next) {
         if (cvWaitKey(0) == 27) break;
         qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
@@ -63,17 +63,21 @@ IplImage* nclseg::seg(IplImage* img)
         analyse::showImg(em, "em");
     }
     cvWaitKey(0);
-*/
-    //analyse::showImg(em, "em");
+    cvThreshold(em, em, 200, 255, CV_THRESH_BINARY);
 
- /*   //free the list
-    struct point *temp = Point;
-    while (temp = Point->next) {
-        free(Point);
-        Point = temp;
+    analyse::fillHole(em);
+    analyse::showImg(em, "em-after");
+
+
+    //free the list
+    struct point *temp1 = NULL;
+    while ((temp1 = temp->next) != NULL) {
+        free(temp);
+        temp = temp1;
     }
+    free(temp);
 
-*/
+
     cvWaitKey(0);
     cvDestroyAllWindows();
 
