@@ -186,7 +186,7 @@ IplImage* analyse::analyseCoutours(IplImage *img)
         //int key;
         CvSeq* c = contours;
         //int i = 0;
-        analyse::showImg(pic, "testing");
+        //analyse::showImg(pic, "testing");
        // cvWaitKey(0);
         for (; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 2000) continue;
@@ -277,6 +277,61 @@ void analyse::analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point
 
     }
     analyse::showImg(dst, "ellipse");
+}
+
+void analyse::analyseCoutours2ApproxPoly(IplImage* src, IplImage* dst, struct point *Point)
+{
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    CvMemStorage* storage2 = cvCreateMemStorage(0);
+    CvSeq* contours = 0;
+    cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
+    cvZero(dst);
+    if (contours) {
+        int key;
+        CvSeq* c = contours;
+        CvSeq* approxpoly = 0;
+
+        int x, y, count, i;
+        CvPoint point;
+
+        analyse::showImg(dst, "approxpoly");
+        cvWaitKey(0);
+        struct point *temp;
+        for (; c != NULL; c = c->h_next) {
+            if (cvContourArea(c) < 2000) continue;
+
+
+            cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, 1);
+
+            approxpoly = cvApproxPoly(c, sizeof(CvContour), storage2, CV_POLY_APPROX_DP, 30, 0);
+            cvDrawContours(dst, approxpoly, cvScalar(255), cvScalarAll(125), 0, 5);
+
+            //insert the point in the list
+            temp = (struct point *)malloc(sizeof(struct point));
+            if(temp != NULL) {
+                Point->next = temp;
+                Point = temp;
+            }
+            else qDebug("OUT OF SPACE");
+            Point->ciclepoint = analyse::cvtContour1Point(approxpoly);
+
+            temp = (struct point *)malloc(sizeof(struct point));
+            if(temp != NULL) {
+                Point->next = temp;
+                Point = temp;
+            }
+            else qDebug("OUT OF SPACE");
+            Point->ciclepoint = analyse::cvtContour11Point(approxpoly);
+
+
+            analyse::showImg(dst, "approxpoly");
+
+            if ((key = cvWaitKey(0))== 27) break;
+        }
+
+        Point->next = NULL;
+
+    }
 }
 
 //Attention ! unused!
@@ -405,4 +460,47 @@ void analyse::lighten(IplImage* img)
             img->imageData[j + key] = data;
         }
     }
+}
+
+CvPoint analyse::cvtContour2Point(CvSeq* contour)
+{
+    int x, y, count, i;
+    CvPoint point;
+    CvPoint ptr_point[10];
+    x = y = count = 0;
+    for (i = 0; i < 6; ++i) {
+        ptr_point[i].x = -1;
+        ptr_point[i].y = -1;
+    }
+    cvCvtSeqToArray(contour, ptr_point);
+    for (i = 0; i < 6; ++i) {
+        if ((ptr_point[i].x > 0) && (ptr_point[i].y > 0)) {
+            x += ptr_point[i].x;
+            y += ptr_point[i].y;
+             ++count;
+        }
+    }
+    point.x = x / count;
+    point.y = y / count;
+    return point;
+}
+
+CvPoint analyse::cvtContour1Point(CvSeq *contour)
+{
+    CvPoint point;
+    CvPoint ptr_point[10];
+    cvCvtSeqToArray(contour, ptr_point);
+    point.x = ptr_point[0].x;
+    point.y = ptr_point[0].y;
+    return point;
+}
+
+CvPoint analyse::cvtContour11Point(CvSeq *contour)
+{
+    CvPoint point;
+    CvPoint ptr_point[10];
+    cvCvtSeqToArray(contour, ptr_point);
+    point.x = ptr_point[1].x;
+    point.y = ptr_point[1].y;
+    return point;
 }
