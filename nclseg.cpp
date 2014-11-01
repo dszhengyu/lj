@@ -17,11 +17,14 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* Ig = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* IE = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* im = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* circles = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* ellipse = cvCreateImage(cvGetSize(img), img->depth, 1);
+    //IplImage* circles = cvCreateImage(cvGetSize(img), img->depth, 1);
+    //IplImage* ellipse = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* approxpoly = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* water = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 3);
+    //IplImage* em_after =  cvCreateImage(cvGetSize(img), img->depth, 3);
+    IplImage* imcopy = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* waterseed = cvCreateImage(cvGetSize(img), img->depth, 1);
+
 
     struct point *Point;
     Point = (struct point *)malloc(sizeof(struct point));
@@ -46,28 +49,27 @@ IplImage* nclseg::seg(IplImage* img)
     analyse::fillHole(IE);
     cvErode(IE, IE, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 3);
     cvAnd(BW2, IE, im);
+    cvCopy(im, imcopy);
 
     em = analyse::analyseCoutours(BW2);
     analyse::lighten(em);
-    analyse::showImg(em, "em");
+    //analyse::showImg(em, "em");
 
     analyse::showImg(im, "im");
     analyse::analyseCoutours2ApproxPoly(im, approxpoly, Point);
 
     struct point *temp = Point;
-
     while (Point = Point->next) {
-        if (cvWaitKey(0) == 27) break;
-        qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
+        //if (cvWaitKey(0) == 27) break;
+       //qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
         cvFloodFill(em, Point->ciclepoint, cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
-        analyse::showImg(em, "em");
+        //analyse::showImg(em, "em");
     }
     cvWaitKey(0);
     cvThreshold(em, em, 200, 255, CV_THRESH_BINARY);
 
     analyse::fillHole(em);
-    analyse::showImg(em, "em-after");
-
+    analyse::showImg(em, "em");
 
     //free the list
     struct point *temp1 = NULL;
@@ -77,6 +79,29 @@ IplImage* nclseg::seg(IplImage* img)
     }
     free(temp);
 
+    analyse::fillHole(imcopy);
+    //cvErode(imcopy, imcopy, cvCreateStructuringElementEx(3, 3, 2, 2, CV_SHAPE_RECT), 20);
+
+    //waterseed = analyse::cvtContour2Waterseed(imcopy);
+    waterseed = analyse::analyseCoutours2(imcopy);
+    analyse::showImg(imcopy, "imcopy");
+    analyse::showImg(waterseed, "waterseed");
+
+   // cvCvtColor(em, em_after, CV_GRAY2BGR);
+    //analyse::showImg(em_after, "em_after");
+
+    analyse::showImg(im, "im-now");
+    cv::Mat image(img, 0);
+    cv::Mat imageMask(waterseed, 0);
+    cv::Mat water;
+    imageMask.convertTo(imageMask, CV_32S);
+    cv::watershed(image, imageMask);
+   // imageMask.convertTo(imageMask,CV_8U,255, 255);
+    imageMask.convertTo(water, CV_8U);
+    analyse::showImg(&IplImage(water), "water");
+
+    //cvAnd(em, &IplImage(water), &IplImage(water));
+    //analyse::showImg(&IplImage(water), "water-after");
 
     cvWaitKey(0);
     cvDestroyAllWindows();
@@ -84,81 +109,15 @@ IplImage* nclseg::seg(IplImage* img)
     return IE;
 }
 
-
-
-
-
-
-
-
-
-
-/*
-void nclseg::cvt32to8(IplImage *src, IplImage *dst)
+IplImage* nclseg::water(IplImage* src, IplImage *dst)
 {
-    int height= src->height;
-    int width = src->width;
-
-    for( int i = 0; i < src->height; i++ )
-        for( int j = 0; j < src->width; j++ )
-        {
-             int idx = CV_IMAGE_ELEM(src, int, i, j );
-             unsigned char* dst = &CV_IMAGE_ELEM(dst, unsigned char, i, j );
-             *dst = (unsigned char)idx/65535*255;
-
-         }
-
-
+    cv::Mat image(src, 0);
+    cv::Mat imageMask(dst, 0);
+    cv::Mat final;
+    image.convertTo(image, CV_32S);
+    imageMask.convertTo(imageMask, CV_32S);
+    cv::watershed(image, imageMask);
+    imageMask.convertTo(final, CV_8U);
+    analyse::showImg(&IplImage(final), "water");
+    return &IplImage(final);
 }
-*/
-
-IplImage* nclseg::watermelon(IplImage *water, IplImage *im)
-{
-    IplImage* markers = cvCreateImage(cvGetSize(water), IPL_DEPTH_32S, 1);
-    IplImage* watershed = cvCreateImage(cvGetSize(water), IPL_DEPTH_8U, 3);
-    cvCopy(water, watershed);
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    cvZero(watershed);
-    cvZero(markers);
-    CvSeq* contours = 0;
-    CvMat* color_tab = 0;
-    CvRNG rng = cvRNG(-1);
-    int i, j, comp_count = 0;
-    cvClearMemStorage(storage);
-
-    cvFindContours( im, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
-    for( ; contours != 0; contours = contours->h_next, comp_count++ )
-        cvDrawContours(markers, contours, cvScalarAll(comp_count+1), cvScalarAll(comp_count+1), -1, -1, 8, cvPoint(0,0) );
-
-    color_tab = cvCreateMat( 1, comp_count, CV_8UC3 );
-    for( i = 0; i < comp_count; i++ )
-    {
-        uchar* ptr = color_tab->data.ptr + i*3;
-        ptr[0] = (uchar)(cvRandInt(&rng)%180 + 50);
-        ptr[1] = (uchar)(cvRandInt(&rng)%180 + 50);
-        ptr[2] = (uchar)(cvRandInt(&rng)%180 + 50);
-     }
-
-     cvWatershed(water, markers );
-     //cvSave("markers.xml",markers);
-
-     for( i = 0; i < markers->height; i++ )
-        for( j = 0; j < markers->width; j++ )
-        {
-            int idx = CV_IMAGE_ELEM( markers, int, i, j );
-            uchar* dst = &CV_IMAGE_ELEM( watershed, uchar, i, j*3 );
-            if( idx == -1 )
-                 dst[0] = dst[1] = dst[2] = (uchar)255;
-            else if( idx <= 0 || idx > comp_count )
-                 dst[0] = dst[1] = dst[2] = (uchar)0;
-            else {
-                 uchar* ptr = color_tab->data.ptr + (idx-1)*3;
-                 dst[0] = ptr[0]; dst[1] = ptr[1]; dst[2] = ptr[2];
-                 }
-         }
-     //cvAddWeighted( watershed, 0.5, img_gray, 0.5, 0, watershed );
-
-     return watershed;
-
-}
-

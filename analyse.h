@@ -30,6 +30,8 @@ public:
     static CvPoint cvtContour2Point(CvSeq *contour);
     static CvPoint cvtContour1Point(CvSeq *contour);
     static CvPoint cvtContour11Point(CvSeq *contour);
+    static IplImage* cvtContour2Waterseed(IplImage* img);
+    static IplImage* analyseCoutours2(IplImage *img);
 };
 
 
