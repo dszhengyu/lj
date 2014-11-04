@@ -183,7 +183,6 @@ IplImage* analyse::analyseCoutours(IplImage *img)
     cvFindContours(pic, storage, &contours, sizeof(CvContour), CV_RETR_LIST);
     cvZero(pic);
     if (contours) {
-        //int key;
         CvSeq* c = contours;
         //int i = 0;
         //analyse::showImg(pic, "testing");
@@ -192,52 +191,14 @@ IplImage* analyse::analyseCoutours(IplImage *img)
             if (cvContourArea(c) < 2000) continue;
             cvDrawContours(pic, c, cvScalar(255), cvScalarAll(125), 0, -1);
             //qDebug("i = %d, area = %f, perimeter = %f", ++i, cvContourArea(c), cvArcLength(c));
-            CvRect rect = cvBoundingRect(c,0);
-            //cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 3, 8, 0);
+            //CvRect rect = cvBoundingRect(c,0);
+           // cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 3, 8, 0);
             //analyse::showImg(pic, "testing");
-            //if ((key = cvWaitKey(0))== 27) break;
+            //if (cvWaitKey(0)== 27) break;
         }
         //analyse::showImg(pic, "testing");
     }
     return pic;
-}
-
-int analyse::analyseCoutours2Circle(IplImage* src, IplImage* dst, struct point* Point)
-{
-    struct circle {
-        CvPoint2D32f center;
-        float radius = 255;
-    } a_circle;
-    float rmin = 255;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    CvSeq* contours = 0;
-    cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
-    cvZero(dst);
-    if (contours) {
-        int key;
-        CvSeq* c = contours;
-        analyse::showImg(dst, "circle");
-        //cvWaitKey(0);
-        for (; c != NULL; c = c->h_next) {
-            if (cvContourArea(c) < 2000) continue;
-            struct point *temp;
-            temp = (struct point *)malloc(sizeof(struct point));
-            Point->next = temp;
-            Point = temp;
-            cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, -1);
-            cvMinEnclosingCircle(c, &a_circle.center, &a_circle.radius);
-            rmin = ((rmin < a_circle.radius) ? rmin : a_circle.radius);
-            cvCircle(dst, Point->ciclepoint = cvPoint((int)a_circle.center.x,(int)a_circle.center.y), (int)a_circle.radius, cvScalarAll(255), -1);
-           // analyse::showImg(dst, "circle");
-            //qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
-            //if ((key = cvWaitKey(0))== 27) break;
-        }
-        Point->next = NULL;
-
-    }
-    analyse::showImg(dst, "circle");
-    //qDebug("%f", rmin);
-    return (int)rmin;
 }
 
 void analyse::analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point *Point)
@@ -249,7 +210,6 @@ void analyse::analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point
     cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
     cvZero(dst);
     if (contours) {
-        int key;
         CvSeq* c = contours;
         analyse::showImg(dst, "ellipse");
         cvWaitKey(0);
@@ -271,7 +231,7 @@ void analyse::analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point
             cvEllipseBox(dst, box, cvScalarAll(255), 3);
             analyse::showImg(dst, "ellipse");
             qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
-            //if ((key = cvWaitKey(0))== 27) break;
+            //if (cvWaitKey(0)== 27) break;
         }
         Point->next = NULL;
 
@@ -287,25 +247,15 @@ void analyse::analyseCoutours2ApproxPoly(IplImage* src, IplImage* dst, struct po
     cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
     cvZero(dst);
     if (contours) {
-        int key;
         CvSeq* c = contours;
         CvSeq* approxpoly = 0;
 
-        int x, y, count, i;
-        CvPoint point;
-
-        analyse::showImg(dst, "approxpoly");
-        cvWaitKey(0);
         struct point *temp;
         for (; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 2000) continue;
-
-
             cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, 1);
-
             approxpoly = cvApproxPoly(c, sizeof(CvContour), storage2, CV_POLY_APPROX_DP, 30, 0);
             cvDrawContours(dst, approxpoly, cvScalar(255), cvScalarAll(125), 0, 5);
-
             //insert the point in the list
             temp = (struct point *)malloc(sizeof(struct point));
             if(temp != NULL) {
@@ -322,143 +272,8 @@ void analyse::analyseCoutours2ApproxPoly(IplImage* src, IplImage* dst, struct po
             }
             else qDebug("OUT OF SPACE");
             Point->ciclepoint = analyse::cvtContour11Point(approxpoly);
-
-
-            analyse::showImg(dst, "approxpoly");
-
-            if ((key = cvWaitKey(0))== 27) break;
         }
-
         Point->next = NULL;
-
-    }
-}
-
-//Attention ! unused!
-IplImage* analyse::analyseCoutours1by1(IplImage* img)
-{
-    IplImage* pic = cvCreateImage(cvGetSize(img), 8, 1);
-    cvCopy(img, pic);
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    CvSeq* contours = 0;
-    CvContourScanner scanner = cvStartFindContours(pic, storage);
-    cvZero(pic);
-    int key;
-    do {
-        if ((key = cvWaitKey(0))== 27) break;
-        contours = cvFindNextContour(scanner);
-        cvDrawContours(pic, contours, cvScalarAll(255), cvScalarAll(255), 0, 3, -1);
-        CvRect rect = cvBoundingRect(contours,0);
-        cvRectangle(pic, cvPoint(rect.x, rect.y), cvPoint(rect.x + rect.width, rect.y + rect.height),cvScalarAll(255), 2, 8, 0);
-        analyse::showImg(pic, "testing");
-        qDebug("there");
-    } while (contours);
-    cvEndFindContours(&scanner);
-
-    return pic;
-}
-
-/*============================================================================
-=  代码内容：最大熵阈值分割
-=  修改日期:2009-3-3
-=  作者:crond123
-=  博客:http://blog.csdn.net/crond123/
-=  E_Mail:crond123@163.com
-===============================================================================
-// 计算当前位置的能量熵
-double caculateCurrentEntropy(CvHistogram * Histogram1,int cur_threshold,int state)
-{
-int start,end;
-int  total =0;
-double cur_entropy =0.0;
-if(state == 0)
-    {
-        start =0;
-        end = cur_threshold;
-    }
-else
-    {
-        start = cur_threshold;
-        end =256;
-    }
-for(int i=start;i<end;i++)
-    {
-        total += (int)cvQueryHistValue_1D(Histogram1,i);//查询直方块的值 P304
-    }
-for(int j=start;j<end;j++)
-    {
-if((int)cvQueryHistValue_1D(Histogram1,j)==0)
-continue;
-double percentage = cvQueryHistValue_1D(Histogram1,j)/total;
-//熵的定义公式
-        cur_entropy +=-percentage*logf(percentage);
-//根据泰勒展式去掉高次项得到的熵的近似计算公式
-        //cur_entropy += percentage*percentage;
-    }
-return cur_entropy;
-//    return (1-cur_entropy);
-}
-
-//寻找最大熵阈值并分割
-void  analyse::MaxEntropy(IplImage *src,IplImage *dst)
-{
-    assert(src != NULL);
-    assert(src->depth ==8&& dst->depth ==8);
-    assert(src->nChannels ==1);
-    int HistogramBins = 256;
-    float range[] = {0,255};
-    float* ranges[]={range};
-    CvHistogram * hist  = cvCreateHist(1,&HistogramBins,CV_HIST_ARRAY,ranges);//创建一个指定尺寸的直方图
-//参数含义：直方图包含的维数、直方图维数尺寸的数组、直方图的表示格式、方块范围数组、归一化标志
-    cvCalcHist(&src,hist);//计算直方图
-double maxentropy =-1.0;
-int max_index =-1;
-// 循环测试每个分割点，寻找到最大的阈值分割点
-for(int i=0;i<HistogramBins;i++)
-    {
-double cur_entropy = caculateCurrentEntropy(hist,i,1)+caculateCurrentEntropy(hist,i,0);
-if(cur_entropy>maxentropy)
-        {
-            maxentropy = cur_entropy;
-            max_index = i;
-        }
-    }
-    cvThreshold(src, dst, (double)max_index,255, CV_THRESH_BINARY);
-    cvReleaseHist(&hist);
-}
-
-*/
-
-int analyse::analyseMaxvalue(IplImage* img)
-{
-    int height, width, max;
-    height = img->height;
-    width = img->width;
-    max = 0;
-    for (int i = 0; i < height; ++i) {
-        int key = i * img->widthStep;
-        for (int j = 0; j < width; ++j) {
-            int k = img->imageData[j + key];
-            max = (max > k) ? max : k;
-        }
-    }
-    qDebug("%d", max);
-    return max;
-}
-
-void analyse::lighten(IplImage* img)
-{
-    int height, width, step, key;
-    height = img->height;
-    width = img->width;
-    step = img->widthStep;
-    for (int i = 0; i < height; ++i) {
-        key = i * step;
-        for (int j = 0; j < width; ++j) {
-            int data = img->imageData[j + key];
-            data = (data ? 150 : 0);
-            img->imageData[j + key] = data;
-        }
     }
 }
 
@@ -503,4 +318,100 @@ CvPoint analyse::cvtContour11Point(CvSeq *contour)
     point.x = ptr_point[1].x;
     point.y = ptr_point[1].y;
     return point;
+}
+
+IplImage* analyse::flood(IplImage* img, IplImage* im)
+{
+    IplImage* approxpoly = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
+
+    struct point *Point;
+    Point = (struct point *)malloc(sizeof(struct point));
+    Point->ciclepoint = cvPoint(-1, -1), Point->next = NULL;
+
+    em = analyse::analyseCoutours(img);
+    cvThreshold(em, em, 200, 150, CV_THRESH_BINARY);
+
+    analyse::analyseCoutours2ApproxPoly(im, approxpoly, Point);
+    struct point *temp = Point;
+    while (Point = Point->next) {
+        cvFloodFill(em, Point->ciclepoint, cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
+    }
+    cvThreshold(em, em, 200, 255, CV_THRESH_BINARY);
+    analyse::fillHole(em);
+
+    //free the list
+    struct point *temp1 = NULL;
+    while ((temp1 = temp->next) != NULL) {
+        free(temp);
+        temp = temp1;
+    }
+    free(temp);
+
+    return em;
+}
+
+
+
+IplImage* analyse::cvtIm2Waterseed(IplImage* img)
+{
+    IplImage* waterseed = cvCreateImage(cvGetSize(img), img->depth, 1);
+    cvZero(waterseed);
+    int i = 10;
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    CvSeq* contours = 0;
+    cvFindContours(img, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
+    if (contours) {
+        CvSeq* c = contours;
+        for (; c != NULL; c = c->h_next) {
+            if (cvContourArea(c) < 2000) continue;//to be settled
+            cvDrawContours(waterseed, c, cvScalarAll(i += 5), cvScalarAll(i), 0, -1);
+        }
+
+    }
+    return waterseed;
+}
+
+cv::Mat analyse::water(IplImage* img, IplImage *imcopy)
+{
+    IplImage* waterseed = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* gradient = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* gradient2 =  cvCreateImage(cvGetSize(img), img->depth, 3);
+    IplImage* imwaterseed = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* ero = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* notimg = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* backdist = cvCreateImage(cvGetSize(img), img->depth, 1);
+
+    //generate gradient picture, erode and sub
+    analyse::fillHole(img);
+    cvErode(img, ero, cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT), 2);
+    cvSub(img, ero, gradient);
+    analyse::showImg(ero, "ero");
+    cvCvtColor(gradient, gradient2, CV_GRAY2BGR);
+    analyse::showImg(gradient2, "gradient2");
+
+    //generate imwaterseed, mark the nyclei with different color
+    analyse::fillHole(imcopy);
+    cvErode(imcopy, imcopy, cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT), 2);
+    imwaterseed = analyse::cvtIm2Waterseed(imcopy);
+
+    //generate background seed named backdist
+    cvNot(img, notimg);
+    cvDistTransform(notimg,  backdist, CV_DIST_L1);
+    cvThreshold(backdist, backdist, 10, 255, CV_THRESH_BINARY);
+
+    //generate waterseed, add the imwaterseed & backdist
+    cvAdd(imwaterseed, backdist, waterseed);
+    analyse::showImg(waterseed, "waterseed");
+
+    //watersheding
+    cv::Mat image(gradient2, 0);
+    cv::Mat imageMask(waterseed, 0);
+    cv::Mat water;
+    imageMask.convertTo(imageMask, CV_32S);
+    cv::watershed(image, imageMask);
+    imageMask.convertTo(imageMask,CV_8U,255, 255);
+    imageMask.convertTo(water, CV_8U);
+
+    return water;
 }
