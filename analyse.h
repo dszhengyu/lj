@@ -19,19 +19,20 @@ public:
     static IplImage* fillHole(IplImage* hole);
     static int Otsu(IplImage* src);
     static void showImg(IplImage* img, char *s);
-    static void  MaxEntropy(IplImage *src,IplImage *dst);
     static IplImage* analyseCoutours(IplImage* img);
-    static int analyseCoutours2Circle(IplImage* src, IplImage* dst, struct point *Point);
     static void analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point *Point);
     static void analyseCoutours2ApproxPoly(IplImage* src, IplImage* dst, struct point *Point);
-    static IplImage* analyseCoutours1by1(IplImage* img);
-    static int analyseMaxvalue(IplImage* img);
-    static void lighten(IplImage* img);
     static CvPoint cvtContour2Point(CvSeq *contour);
     static CvPoint cvtContour1Point(CvSeq *contour);
     static CvPoint cvtContour11Point(CvSeq *contour);
-    static IplImage* cvtContour2Waterseed(IplImage* img);
-    static IplImage* analyseCoutours2(IplImage *img);
+    static IplImage* flood(IplImage* BW2, IplImage* im);
+    static IplImage* cvtIm2Waterseed(IplImage* img);
+    static cv::Mat water(IplImage* BW2, IplImage* imcopy);
+};
+
+struct point {
+    CvPoint ciclepoint;
+    struct point *next;
 };
 
 

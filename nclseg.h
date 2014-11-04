@@ -12,12 +12,8 @@ public:
     nclseg();
 public:
     static IplImage* seg(IplImage* img);
-    static IplImage* water(IplImage* src, IplImage* dst);
 };
-struct point {
-    CvPoint ciclepoint;
-    struct point *next;
-};
+
 
 
 #endif // NCLSEG_H
