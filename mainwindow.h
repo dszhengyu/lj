@@ -9,7 +9,9 @@
 #include "nclseg.h"
 #include "analyse.h"
 #include "opencv2qt.h"
-
+#include <QTextCodec>
+#include <QMovie>
+#include <QThread>
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +31,16 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+};
+
+class MyThread
+{
+
+public:
+    MyThread(QString fileName);
+    static void loadPic();
+    static void showPic();
+    QString fileName;
 };
 
 #endif // MAINWINDOW_H
