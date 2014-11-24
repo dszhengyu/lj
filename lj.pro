@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     opencv2qt.cpp \
     nclseg.cpp \
-    analyse.cpp
+    analyse.cpp \
+    mywindow.cpp
 
 HEADERS  += mainwindow.h \
     opencv2qt.h \
     nclseg.h \
-    analyse.h
+    analyse.h \
+    mywindow.h
 
 FORMS    += mainwindow.ui
 

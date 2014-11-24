@@ -8,8 +8,15 @@ int analyse::analyseV(IplImage *img)
 {
     IplImage* v = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
     int max_index = 0;
+    int hist_size = 256;
+    float range[] = {0,255};
+    float* ranges[]={range};
+    CvHistogram* gray_hist = cvCreateHist(1, &hist_size, CV_HIST_ARRAY, ranges, 1);
+
     cvSplit(img, 0, 0, v, 0);
-    analyseHist(v, &max_index);
+    cvCalcHist(&v, gray_hist, 0, 0);
+    cvGetMinMaxHistValue(gray_hist, 0, 0, 0, &max_index);
+
     //qDebug("%d", max_index);
     return max_index;
 }
@@ -44,44 +51,14 @@ IplImage* analyse::analyseHist(IplImage *channel, int *ptr_max_index)
 
 }
 
-IplImage* analyse::splictB(const IplImage* img)
-{
-    IplImage* b = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* g = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* r = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    cvSplit(img, b, g, r, 0);
-
-    return b;
-}
-
-IplImage* analyse::splictS(const IplImage* img)
-{
-    IplImage* h = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* s = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* v = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    cvSplit(img, h, s, v, 0);
-
-    return s;
-}
-
-IplImage* analyse::splictG(const IplImage* img)
-{
-    IplImage* b = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* g = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    IplImage* r = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-    cvSplit(img, b, g, r, 0);
-
-    return g;
-}
-
 void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
 {
     IplImage* IsDivIg = cvCreateImage(cvGetSize(Is), IPL_DEPTH_8U, 1);
 
     if (T > 250)//choose the T value according to the V-channel of the picture.
         T = 2;//there maybe exist a function could apply to all the picture to calculate the T value
-    else if (T > 200)
-            T = 4;
+    else if (T > 190)
+        T = 4;
     else
         T = 45;
 
@@ -106,7 +83,6 @@ void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
 
         }
     }
-
 }
 
 IplImage* analyse::fillHole(IplImage *hole)
@@ -201,82 +177,6 @@ IplImage* analyse::analyseCoutours(IplImage *img)
     return pic;
 }
 
-void analyse::analyseCoutours2Ellipse(IplImage* src, IplImage* dst, struct point *Point)
-{
-    CvBox2D box;
-    int x, y;
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    CvSeq* contours = 0;
-    cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
-    cvZero(dst);
-    if (contours) {
-        CvSeq* c = contours;
-        analyse::showImg(dst, "ellipse");
-        cvWaitKey(0);
-        for (; c != NULL; c = c->h_next) {
-            if (cvContourArea(c) < 2000) continue;
-            cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, -1);
-
-            //insert the point in the list
-            struct point *temp;
-            temp = (struct point *)malloc(sizeof(struct point));
-            Point->next = temp;
-            Point = temp;
-            box = cvFitEllipse2(c);
-            x = ((int)box.center.x > dst->width ? dst->width - 3: (int)box.center.x);//x and y may out of range!
-            y = ((int)box.center.y > dst->height ? dst->height - 3: (int)box.center.y);
-            Point->ciclepoint = cvPoint(x, y);
-
-            //draw the ellipse in the dst
-            cvEllipseBox(dst, box, cvScalarAll(255), 3);
-            analyse::showImg(dst, "ellipse");
-            qDebug("(%d, %d)", Point->ciclepoint.x, Point->ciclepoint.y);
-            //if (cvWaitKey(0)== 27) break;
-        }
-        Point->next = NULL;
-
-    }
-    analyse::showImg(dst, "ellipse");
-}
-
-void analyse::analyseCoutours2ApproxPoly(IplImage* src, IplImage* dst, struct point *Point)
-{
-    CvMemStorage* storage = cvCreateMemStorage(0);
-    CvMemStorage* storage2 = cvCreateMemStorage(0);
-    CvSeq* contours = 0;
-    cvFindContours(src, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
-    cvZero(dst);
-    if (contours) {
-        CvSeq* c = contours;
-        CvSeq* approxpoly = 0;
-
-        struct point *temp;
-        for (; c != NULL; c = c->h_next) {
-            if (cvContourArea(c) < 2000) continue;
-            cvDrawContours(dst, c, cvScalar(255), cvScalarAll(125), 0, 1);
-            approxpoly = cvApproxPoly(c, sizeof(CvContour), storage2, CV_POLY_APPROX_DP, 30, 0);
-            cvDrawContours(dst, approxpoly, cvScalar(255), cvScalarAll(125), 0, 5);
-            //insert the point in the list
-            temp = (struct point *)malloc(sizeof(struct point));
-            if(temp != NULL) {
-                Point->next = temp;
-                Point = temp;
-            }
-            else qDebug("OUT OF SPACE");
-            Point->ciclepoint = analyse::cvtContour1Point(approxpoly);
-
-            temp = (struct point *)malloc(sizeof(struct point));
-            if(temp != NULL) {
-                Point->next = temp;
-                Point = temp;
-            }
-            else qDebug("OUT OF SPACE");
-            Point->ciclepoint = analyse::cvtContour11Point(approxpoly);
-        }
-        Point->next = NULL;
-    }
-}
-
 CvPoint analyse::cvtContour2Point(CvSeq* contour)
 {
     int x, y, count, i;
@@ -300,57 +200,34 @@ CvPoint analyse::cvtContour2Point(CvSeq* contour)
     return point;
 }
 
-CvPoint analyse::cvtContour1Point(CvSeq *contour)
+IplImage* analyse::flood(IplImage *img, IplImage *im)
 {
-    CvPoint point;
-    CvPoint ptr_point[10];
-    cvCvtSeqToArray(contour, ptr_point);
-    point.x = ptr_point[0].x;
-    point.y = ptr_point[0].y;
-    return point;
-}
-
-CvPoint analyse::cvtContour11Point(CvSeq *contour)
-{
-    CvPoint point;
-    CvPoint ptr_point[10];
-    cvCvtSeqToArray(contour, ptr_point);
-    point.x = ptr_point[1].x;
-    point.y = ptr_point[1].y;
-    return point;
-}
-
-IplImage* analyse::flood(IplImage* img, IplImage* im)
-{
-    IplImage* approxpoly = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
+    CvMemStorage* storage = cvCreateMemStorage(0);
+    CvSeq* contours = 0;
+    CvPoint point[10];
 
-    struct point *Point;
-    Point = (struct point *)malloc(sizeof(struct point));
-    Point->ciclepoint = cvPoint(-1, -1), Point->next = NULL;
-
-    em = analyse::analyseCoutours(img);
+    cvZero(em);
+    cvFindContours(img, storage, &contours, sizeof(CvContour), CV_RETR_LIST);
+    cvDrawContours(em, contours, cvScalar(255), cvScalarAll(125), 2, -1);
     cvThreshold(em, em, 200, 150, CV_THRESH_BINARY);
+    cvFindContours(im, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
+    if (contours) {
+        CvSeq* c = contours;
+        CvSeq* approxpoly = 0;
 
-    analyse::analyseCoutours2ApproxPoly(im, approxpoly, Point);
-    struct point *temp = Point;
-    while (Point = Point->next) {
-        cvFloodFill(em, Point->ciclepoint, cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
+        for (; c != NULL; c = c->h_next) {
+            if (cvContourArea(c) < 2000) continue;
+            approxpoly = cvApproxPoly(c, sizeof(CvContour), storage, CV_POLY_APPROX_DP, 30, 0);
+            cvCvtSeqToArray(approxpoly, point);
+            cvFloodFill(em, point[0], cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
+            cvFloodFill(em, point[1], cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
+        }
     }
     cvThreshold(em, em, 200, 255, CV_THRESH_BINARY);
     analyse::fillHole(em);
-
-    //free the list
-    struct point *temp1 = NULL;
-    while ((temp1 = temp->next) != NULL) {
-        free(temp);
-        temp = temp1;
-    }
-    free(temp);
-
     return em;
 }
-
 
 
 IplImage* analyse::cvtIm2Waterseed(IplImage* img)
@@ -367,7 +244,6 @@ IplImage* analyse::cvtIm2Waterseed(IplImage* img)
             if (cvContourArea(c) < 2000) continue;//to be settled
             cvDrawContours(waterseed, c, cvScalarAll(i += 5), cvScalarAll(i), 0, -1);
         }
-
     }
     return waterseed;
 }
@@ -383,14 +259,12 @@ cv::Mat analyse::water(IplImage* img, IplImage *imcopy)
     IplImage* backdist = cvCreateImage(cvGetSize(img), img->depth, 1);
 
     //generate gradient picture, erode and sub
-    analyse::fillHole(img);
-    cvErode(img, ero, cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT), 2);
+    cvErode(img, ero, cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT), 3);
     cvSub(img, ero, gradient);
-    analyse::showImg(ero, "ero");
     cvCvtColor(gradient, gradient2, CV_GRAY2BGR);
-    analyse::showImg(gradient2, "gradient2");
+    //analyse::showImg(gradient2, "gradient2");
 
-    //generate imwaterseed, mark the nyclei with different color
+    //generate imwaterseed, mark the nuclei with different color
     analyse::fillHole(imcopy);
     cvErode(imcopy, imcopy, cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT), 2);
     imwaterseed = analyse::cvtIm2Waterseed(imcopy);
@@ -402,7 +276,7 @@ cv::Mat analyse::water(IplImage* img, IplImage *imcopy)
 
     //generate waterseed, add the imwaterseed & backdist
     cvAdd(imwaterseed, backdist, waterseed);
-    analyse::showImg(waterseed, "waterseed");
+    //analyse::showImg(waterseed, "waterseed");
 
     //watersheding
     cv::Mat image(gradient2, 0);
@@ -410,8 +284,6 @@ cv::Mat analyse::water(IplImage* img, IplImage *imcopy)
     cv::Mat water;
     imageMask.convertTo(imageMask, CV_32S);
     cv::watershed(image, imageMask);
-    imageMask.convertTo(imageMask,CV_8U,255, 255);
-    imageMask.convertTo(water, CV_8U);
-
+    imageMask.convertTo(water, CV_8U, 255, 255);
     return water;
 }
