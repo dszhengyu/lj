@@ -1,0 +1,52 @@
+/*all the input pictures' name should not include chinese!!!
+ * and the name of picture should be handled,
+ * that the first character of name is the label of the nuclei in the picture
+ * 
+ *********************************************************************************
+ * the dimension(feature) selected is nuclei's: radius, perimeter, area, roundness, number of parts, cytoplasm's radius, area,
+ * and ratio between nuclei and whole      
+ * (texure????????????how to express????????)
+ * 
+ * the index correspond feature
+ * 1--nuclei's radius
+ * 2--nuclei's perimeter
+ * 3--nuclei's area
+ * 4--nuclei's roundness
+ * 5--nuclei's number of parts
+ * 6--cytoplasm's area
+ * 7--cytoplasm's radius
+ * 8--ratio between nuclei and whole
+ * 9--texure?????????????????????????
+ * 
+ * 
+ * 
+ * **********************************************************************************
+ * the label correspond the type of nuclei
+ * 1--
+ * 2--
+ * 3--
+ * 4--
+ * 5--
+ * 6--
+*/
+
+
+#ifndef CLASSIFICATION_H
+#define CLASSIFICATION_H
+
+#include <QMainWindow>
+#include <QDebug>
+#include <QFileDialog>
+#include <highgui.h>
+#include <cv.h>
+#include "nclseg.h"
+#include "analyse.h"
+
+class classification
+{
+public:
+    classification();
+    static void trainSvm(QStringList fileNames);
+};
+
+#endif // CLASSIFICATION_H

@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/brain.png</file>
+        <file>images/doc.png</file>
+        <file>images/microscope.ico</file>
+        <file>images/new.png</file>
+        <file>images/vector.png</file>
+        <file>images/save.png</file>
+        <file>images/zoom in.png</file>
+        <file>images/zoom out.png</file>
+    </qresource>
+</RCC>

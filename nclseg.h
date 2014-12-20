@@ -5,13 +5,14 @@
 #include <highgui.h>
 #include <QDebug>
 #include "analyse.h"
+#include "feature.h"
 
 class nclseg
 {
 public:
     nclseg();
 public:
-    static IplImage* seg(IplImage* img);
+    static IplImage* seg(IplImage* img);    
 };
 
 

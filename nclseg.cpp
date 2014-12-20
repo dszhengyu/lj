@@ -6,6 +6,8 @@ nclseg::nclseg()
 
 IplImage* nclseg::seg(IplImage* img)
 {
+    //int x, y, heigth, width;
+    int isalot;
     IplImage* gray = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* BW1 = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* BJ = cvCreateImage(cvGetSize(img), img->depth, 1);
@@ -13,7 +15,6 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* BW3 = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* Redcell = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* BW2 = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* BW2copy = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* HSV = cvCreateImage(cvGetSize(img), img->depth, 3);
     IplImage* Is = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* Ig = cvCreateImage(cvGetSize(img), img->depth, 1);
@@ -24,8 +25,12 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* water2 = cvCreateImage(cvGetSize(img), img->depth, 1);
     cv::Mat water;
     IplImage* water3 = cvCreateImage(cvGetSize(img), img->depth, 3);
+    IplImage* water3backup = cvCreateImage(cvGetSize(img), img->depth, 3);
     IplImage* luv = cvCreateImage(cvGetSize(img), img->depth, 3);
     IplImage* mean = cvCreateImage(cvGetSize(img), img->depth, 3);
+    IplImage* waterb = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* water4 = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* water5 = cvCreateImage(cvGetSize(img), img->depth, 3);
 
 //left side
     cvCvtColor(img, gray, CV_BGR2GRAY);
@@ -50,27 +55,49 @@ IplImage* nclseg::seg(IplImage* img)
 
 //middle algorithm
     cvAnd(BW2, IE, im);
-    cvCopy(im, imcopy);
-    cvCopy(BW2, BW2copy);
-    em = analyse::flood(BW2, im);
-    water = analyse::water(BW2copy, imcopy);
-    cvCopy(&IplImage(water), water2);
-    cvAnd(em, water2, water2);
+    cvCopy(im, imcopy);//backup for watershed
+    em = analyse::flood(BW2, im, &isalot);//get em and count nuclei to decide whether watershed or not
+    //qDebug("isalot:%d", isalot);
+
+//watershed ? or not?
+    if (isalot) {
+        water = analyse::water(BW2, imcopy);
+        cvCopy(&IplImage(water), water2);
+        cvAnd(em, water2, water2);
+    }
+    else
+        cvCopy(em, water2);
+
     cvCvtColor(water2, water3, CV_GRAY2BGR);
     cvMin(water3, img, water3);
-    analyse::showImg(water3, "water3");
+    cvCopy(water3, water3backup);
+    //analyse::showImg(water3, "water3");
+
+//meanshift
     cvCvtColor(water3, luv, CV_BGR2Luv);
     cvPyrMeanShiftFiltering(luv, mean, 30, 30);
     cvCvtColor(mean, water3, CV_Luv2BGR);
-    analyse::showImg(water3, "water3-after");
+    //analyse::showImg(water3, "water3-after");
 
+    cvCvtColor(water3, waterb, CV_BGR2GRAY);
+    //analyse::showImg(waterb, "waterb");
+    cvThreshold(waterb, water4, analyse::Otsu2(waterb), 255, CV_THRESH_BINARY_INV);
+    //analyse::showImg(water4, "water4");
+    cvCvtColor(water4, water5, CV_GRAY2BGR);
+    cvMin(water3backup, water5, water5);
+    //analyse::showImg(water5, "water5");
+
+//LBP
+    IplImage* fgray = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* lbp = cvCreateImage(cvGetSize(img), img->depth, 1);
+    cvCvtColor(water5, fgray, CV_BGR2GRAY);
+    feature::LBP(fgray, lbp);
+    analyse::showImg(lbp, "lbp");
 
     cvWaitKey(0);
     cvDestroyAllWindows();
-    cvSaveImage("water3.jpg", water3);
-
-   // cvMeanShift()
+    cvSaveImage("water5.jpg", water5);
 
 
-    return water3;
+    return img;
 }

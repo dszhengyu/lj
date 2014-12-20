@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     opencv2qt.cpp \
     nclseg.cpp \
     analyse.cpp \
-    mywindow.cpp
+    feature.cpp \
+    classification.cpp
 
 HEADERS  += mainwindow.h \
     opencv2qt.h \
     nclseg.h \
     analyse.h \
-    mywindow.h
+    feature.h \
+    classification.h
 
 FORMS    += mainwindow.ui
 
@@ -36,4 +38,7 @@ Z:\lj\opencv\build\include\opencv2
 LIBS += Z:\lj\opencv\build\x64\vc12\lib\opencv_core249d.lib\
 Z:\lj\opencv\build\x64\vc12\lib\opencv_highgui249d.lib\
 Z:\lj\opencv\build\x64\vc12\lib\opencv_imgproc249d.lib
+
+RESOURCES += \
+    pic.qrc
 

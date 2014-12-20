@@ -85,14 +85,13 @@ void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
     }
 }
 
-IplImage* analyse::fillHole(IplImage *hole)
+void analyse::fillHole(IplImage *hole)
 {
     IplImage* temp = cvCreateImage(cvGetSize(hole), IPL_DEPTH_8U, 1);
     cvCopy(hole, temp);
     cvFloodFill(temp, cvPoint(0, 0), cvScalarAll(255));
     cvNot(temp, temp);
     cvAdd(hole, temp, hole);
-    return hole;
 }
 
 int analyse::Otsu(IplImage* src)
@@ -144,6 +143,64 @@ int analyse::Otsu(IplImage* src)
     return threshold;
 }
 
+int analyse::Otsu2(IplImage* src) //ignore 0
+{
+    int height=src->height;
+    int width=src->width;
+    int size = 0;
+    //histogram
+    float histogram[256] = {0};
+    for(int i=0; i < height; i++)
+    {
+        unsigned char* p=(unsigned char*)src->imageData + src->widthStep * i;
+        for(int j = 0; j < width; j++)
+        {
+            if (*p) {
+                histogram[*p++]++;
+                size++;
+            }
+            else {
+                p++;
+                continue;
+            }
+        }
+    }
+
+    //normalize histogram
+
+    for(int i = 0; i < 256; i++)
+    {
+        histogram[i] = histogram[i] / size;
+    }
+
+    //average pixel value
+    float avgValue=0;
+    for(int i=0; i < 256; i++)
+    {
+        avgValue += i * histogram[i];  //整幅图像的平均灰度
+    }
+
+    int threshold;
+    float maxVariance=0;
+    float w = 0, u = 0;
+    for(int i = 0; i < 256; i++)
+    {
+        w += histogram[i];  //假设当前灰度i为阈值, 0~i 灰度的像素(假设像素值在此范围的像素叫做前景像素) 所占整幅图像的比例
+        u += i * histogram[i];  // 灰度i 之前的像素(0~i)的平均灰度值： 前景像素的平均灰度值
+
+        float t = avgValue * w - u;
+        float variance = t * t / (w * (1 - w) );
+        if(variance > maxVariance)
+        {
+            maxVariance = variance;
+            threshold = i;
+        }
+    }
+    //qDebug("%d", threshold);
+    threshold = (threshold > 80 ?threshold: 100);
+    return threshold;
+}
+
 void analyse::showImg(IplImage *img, char *s)
 {
     cvNamedWindow(s, 0);
@@ -177,39 +234,16 @@ IplImage* analyse::analyseCoutours(IplImage *img)
     return pic;
 }
 
-CvPoint analyse::cvtContour2Point(CvSeq* contour)
-{
-    int x, y, count, i;
-    CvPoint point;
-    CvPoint ptr_point[10];
-    x = y = count = 0;
-    for (i = 0; i < 6; ++i) {
-        ptr_point[i].x = -1;
-        ptr_point[i].y = -1;
-    }
-    cvCvtSeqToArray(contour, ptr_point);
-    for (i = 0; i < 6; ++i) {
-        if ((ptr_point[i].x > 0) && (ptr_point[i].y > 0)) {
-            x += ptr_point[i].x;
-            y += ptr_point[i].y;
-             ++count;
-        }
-    }
-    point.x = x / count;
-    point.y = y / count;
-    return point;
-}
 
-IplImage* analyse::flood(IplImage *img, IplImage *im)
+IplImage* analyse::flood(IplImage *img, IplImage *im, int *isalot)
 {
     IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
     CvMemStorage* storage = cvCreateMemStorage(0);
     CvSeq* contours = 0;
     CvPoint point[10];
+    int count = 0;
 
-    cvZero(em);
-    cvFindContours(img, storage, &contours, sizeof(CvContour), CV_RETR_LIST);
-    cvDrawContours(em, contours, cvScalar(255), cvScalarAll(125), 2, -1);
+    cvCopy(img, em);
     cvThreshold(em, em, 200, 150, CV_THRESH_BINARY);
     cvFindContours(im, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
     if (contours) {
@@ -222,10 +256,13 @@ IplImage* analyse::flood(IplImage *img, IplImage *im)
             cvCvtSeqToArray(approxpoly, point);
             cvFloodFill(em, point[0], cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
             cvFloodFill(em, point[1], cvScalarAll(255), cvScalarAll(100), cvScalarAll(200));
+            count++;
         }
     }
     cvThreshold(em, em, 200, 255, CV_THRESH_BINARY);
     analyse::fillHole(em);
+    //qDebug("count: %d", count);
+    *isalot = (count > 5 ? 1 : 0);
     return em;
 }
 

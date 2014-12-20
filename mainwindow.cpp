@@ -8,10 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setWindowTitle("Leukocyte Nucleus");
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("GB2312"));
-
-
+    //QTextCodec::setCodecForLocale(QTextCodec::codecForName("GB2312"));
 }
 
 MainWindow::~MainWindow()
@@ -19,41 +16,25 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_clicked()
+
+void MainWindow::on_action_triggered()
 {
-//    QMovie *loading = new QMovie("waiting.gif");
-//    ui->label_4->setMovie(loading);
-//    loading->start();
-//    ui->label_4->deleteLater();
-
     QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),".",tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
-    IplImage* newimage = cvLoadImage(fileName.toLocal8Bit().data());
-    //ui->label->setPixmap(QPixmap::fromImage(Opencv2Qt::imageCvt(newimage)));
-    //ui->label->resize(newimage->width,newimage->height);
-    nclseg::seg(newimage);
 
-    QPixmap img("water3.jpg");
-    ui->label->setScaledContents(true);
-    ui->label->setPixmap(img);
+    if (fileName.length() != 0) {
+        //qDebug("%s", fileName.toLocal8Bit().data());
+        IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
+        nclseg::seg(newImage);
+
+        QPixmap img("water5.jpg");
+        ui->label->setScaledContents(true);
+        ui->label->setPixmap(img);
+    }
 }
 
-//MyThread::MyThread(QString fileName):
-//{
-//    this->fileName = fileName;
-//}
-
-//void MyThread::loadPic()
-//{
-//    QMovie *loading = new QMovie("waiting.gif");
-//    ui->label_4->setMovie(loading);
-//    loading->start();
-//}
-
-//void MyThread::showPic()
-//{
-//    IplImage* newimage = cvLoadImage(fileName.toLocal8Bit().data());
-//    nclseg::seg(newimage);
-//    QPixmap img("water3.jpg");
-//    ui->label->setScaledContents(true);
-//    ui->label->setPixmap(img);
-//}
+void MainWindow::on_actionSVM_triggered()
+{
+    //QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"));
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
+    classification::trainSvm(fileNames);
+}

@@ -8,10 +8,9 @@
 #include <cv.h>
 #include "nclseg.h"
 #include "analyse.h"
+#include "classification.h"
 #include "opencv2qt.h"
-#include <QTextCodec>
-#include <QMovie>
-#include <QThread>
+
 
 namespace Ui {
 class MainWindow;
@@ -26,21 +25,12 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_actionSVM_triggered();
 
+    void on_action_triggered();
 
 private:
     Ui::MainWindow *ui;
-};
-
-class MyThread
-{
-
-public:
-    MyThread(QString fileName);
-    static void loadPic();
-    static void showPic();
-    QString fileName;
 };
 
 #endif // MAINWINDOW_H
