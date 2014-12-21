@@ -18,14 +18,16 @@ SOURCES += main.cpp\
     nclseg.cpp \
     analyse.cpp \
     feature.cpp \
-    classification.cpp
+    classification.cpp \
+    svm.cpp
 
 HEADERS  += mainwindow.h \
     opencv2qt.h \
     nclseg.h \
     analyse.h \
     feature.h \
-    classification.h
+    classification.h \
+    svm.h
 
 FORMS    += mainwindow.ui
 

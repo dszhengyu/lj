@@ -6,10 +6,12 @@
 #include <QFileDialog>
 #include <highgui.h>
 #include <cv.h>
+#include <QMessageBox>
 #include "nclseg.h"
 #include "analyse.h"
 #include "classification.h"
 #include "opencv2qt.h"
+#include "svm.h"
 
 
 namespace Ui {
@@ -25,11 +27,18 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_actionSVM_triggered();
-
     void on_action_triggered();
 
+    void on_actionZoom_In_triggered();
+
+    void on_actionAbout_triggered();
+
+    void on_actionTrain_SVM_triggered();
+
 private:
+    QImage img;
+    QPixmap pic;
+    int width, height;
     Ui::MainWindow *ui;
 };
 

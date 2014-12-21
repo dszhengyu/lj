@@ -12,7 +12,8 @@ class nclseg
 public:
     nclseg();
 public:
-    static IplImage* seg(IplImage* img);    
+    static IplImage* seg(IplImage* img);
+    static QStringList seg4train(IplImage* img);
 };
 
 

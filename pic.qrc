@@ -8,5 +8,11 @@
         <file>images/save.png</file>
         <file>images/zoom in.png</file>
         <file>images/zoom out.png</file>
+        <file>images/preANN.png</file>
+        <file>images/predict_ANN.png</file>
+        <file>images/predict_SVM.png</file>
+        <file>images/preSVM.png</file>
+        <file>images/zoom1.png</file>
+        <file>images/zoom2.png</file>
     </qresource>
 </RCC>

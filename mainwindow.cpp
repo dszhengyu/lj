@@ -26,15 +26,43 @@ void MainWindow::on_action_triggered()
         IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
         nclseg::seg(newImage);
 
-        QPixmap img("water5.jpg");
+        QPixmap img("nuclei.jpg");
         ui->label->setScaledContents(true);
         ui->label->setPixmap(img);
     }
 }
 
-void MainWindow::on_actionSVM_triggered()
+void MainWindow::on_actionTrain_SVM_triggered()
 {
-    //QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"));
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
     classification::trainSvm(fileNames);
 }
+
+void MainWindow::on_actionZoom_In_triggered()
+{
+    if (img.isNull())
+        ;
+    else {
+
+    }
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+//    QMessageBox::about(NULL, "About", "<h2 id=\"software-developed\">Software Developed</h2>\
+//                       <p>by Appendix </p>\
+//                       <h2 id=\"algorithm-supported\">Algorithm Supported</h2>\
+//                       <p>by LJ </p>\
+//                       <h2 id=\"teacher\">teacher</h2>\
+//                       <p>liuzhi</p>");
+    QMessageBox aboutMessage(QMessageBox::NoIcon, "关于", "<h2 id=\"software-developed\">Software Developed</h2>\
+                             <p>by Appendix </p>\
+                             <h2 id=\"algorithm-supported\">Algorithm Supported</h2>\
+                             <p>by LJ </p>\
+                             <h2 id=\"teacher\">teacher</h2>\
+                             <p>liuzhi</p>");
+    aboutMessage.setIconPixmap(QPixmap("images/brain.png"));
+    aboutMessage.exec();
+}
+
+

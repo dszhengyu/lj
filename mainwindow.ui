@@ -9,9 +9,67 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>764</width>
-    <height>566</height>
+    <width>761</width>
+    <height>591</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>761</width>
+    <height>591</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>761</width>
+    <height>591</height>
+   </size>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>240</red>
+        <green>21</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>240</red>
+        <green>21</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>240</red>
+        <green>21</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>Leukocyte Nucleus</string>
@@ -20,93 +78,68 @@
    <iconset resource="pic.qrc">
     <normaloff>:/images/images/microscope.ico</normaloff>:/images/images/microscope.ico</iconset>
   </property>
+  <property name="windowOpacity">
+   <double>15.000000000000000</double>
+  </property>
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>10</y>
-      <width>761</width>
-      <height>501</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetNoConstraint</enum>
-     </property>
-     <item row="0" column="0">
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="currentIndex">
-        <number>0</number>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <widget class="QWidget" name="tab_3">
-        <attribute name="title">
-         <string>分割结果</string>
-        </attribute>
-        <widget class="QLabel" name="label">
-         <property name="geometry">
-          <rect>
-           <x>3</x>
-           <y>1</y>
-           <width>751</width>
-           <height>451</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="tab_4">
-        <attribute name="title">
-         <string>SVM</string>
-        </attribute>
-        <widget class="QLabel" name="label_2">
-         <property name="geometry">
-          <rect>
-           <x>3</x>
-           <y>1</y>
-           <width>751</width>
-           <height>451</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="tab_5">
-        <attribute name="title">
-         <string>神经网络</string>
-        </attribute>
-        <widget class="QLabel" name="label_3">
-         <property name="geometry">
-          <rect>
-           <x>3</x>
-           <y>1</y>
-           <width>751</width>
-           <height>451</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
+       <attribute name="title">
+        <string>分割结果</string>
+       </attribute>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>741</width>
+          <height>471</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
        </widget>
       </widget>
-     </item>
-    </layout>
-   </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>764</width>
+     <width>761</width>
      <height>23</height>
     </rect>
    </property>
@@ -121,8 +154,10 @@
     <property name="title">
      <string>训练(T)</string>
     </property>
-    <addaction name="actionSVM"/>
+    <addaction name="actionTrain_SVM"/>
     <addaction name="actionTrain_ANN"/>
+    <addaction name="actionSVM_predict"/>
+    <addaction name="actionANN_predict"/>
    </widget>
    <widget class="QMenu" name="menu_H">
     <property name="title">
@@ -137,8 +172,16 @@
     <addaction name="actionZoom_In"/>
     <addaction name="actionZoom_Out"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>预测(&amp;P)</string>
+    </property>
+    <addaction name="actionPredict_SVM"/>
+    <addaction name="actionPredict_ANN"/>
+   </widget>
    <addaction name="menu_F"/>
    <addaction name="menu_E"/>
+   <addaction name="menu"/>
    <addaction name="menu_T"/>
    <addaction name="menu_H"/>
   </widget>
@@ -155,7 +198,10 @@
    <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_Out"/>
    <addaction name="separator"/>
-   <addaction name="actionSVM"/>
+   <addaction name="actionPredict_SVM"/>
+   <addaction name="actionPredict_ANN"/>
+   <addaction name="separator"/>
+   <addaction name="actionTrain_SVM"/>
    <addaction name="actionTrain_ANN"/>
    <addaction name="separator"/>
   </widget>
@@ -168,20 +214,29 @@
    <property name="text">
     <string>打开图片(&amp;O)</string>
    </property>
+   <property name="statusTip">
+    <string>打开图片</string>
+   </property>
+   <property name="whatsThis">
+    <string>打开图片</string>
+   </property>
    <property name="shortcut">
-    <string>Ctrl+N</string>
+    <string>Space</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
-  <action name="actionSVM">
+  <action name="actionTrain_SVM">
    <property name="icon">
     <iconset resource="pic.qrc">
      <normaloff>:/images/images/vector.png</normaloff>:/images/images/vector.png</iconset>
    </property>
    <property name="text">
     <string>train_SVM</string>
+   </property>
+   <property name="statusTip">
+    <string>训练SVM分类器</string>
    </property>
   </action>
   <action name="actionTrain_ANN">
@@ -192,6 +247,9 @@
    <property name="text">
     <string>train_ANN</string>
    </property>
+   <property name="statusTip">
+    <string>训练ANN分类器</string>
+   </property>
   </action>
   <action name="action_S">
    <property name="icon">
@@ -200,6 +258,9 @@
    </property>
    <property name="text">
     <string>保存图片(&amp;S)</string>
+   </property>
+   <property name="statusTip">
+    <string>保存图片</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -213,6 +274,9 @@
    <property name="text">
     <string>About</string>
    </property>
+   <property name="statusTip">
+    <string>About</string>
+   </property>
   </action>
   <action name="actionZoom_In">
    <property name="icon">
@@ -220,6 +284,9 @@
      <normaloff>:/images/images/zoom in.png</normaloff>:/images/images/zoom in.png</iconset>
    </property>
    <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="statusTip">
     <string>Zoom In</string>
    </property>
   </action>
@@ -231,12 +298,54 @@
    <property name="text">
     <string>Zoom Out</string>
    </property>
+   <property name="statusTip">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionSVM_predict">
+   <property name="icon">
+    <iconset resource="pic.qrc">
+     <normaloff>:/images/images/predict_SVM.png</normaloff>:/images/images/predict_SVM.png</iconset>
+   </property>
+   <property name="text">
+    <string>SVM_predict</string>
+   </property>
+  </action>
+  <action name="actionANN_predict">
+   <property name="icon">
+    <iconset resource="pic.qrc">
+     <normaloff>:/images/images/predict_ANN.png</normaloff>:/images/images/predict_ANN.png</iconset>
+   </property>
+   <property name="text">
+    <string>ANN_predict</string>
+   </property>
+  </action>
+  <action name="actionPredict_SVM">
+   <property name="icon">
+    <iconset resource="pic.qrc">
+     <normaloff>:/images/images/preSVM.png</normaloff>:/images/images/preSVM.png</iconset>
+   </property>
+   <property name="text">
+    <string>Predict_SVM</string>
+   </property>
+   <property name="statusTip">
+    <string>预测这是什么细胞（SVM）</string>
+   </property>
+  </action>
+  <action name="actionPredict_ANN">
+   <property name="icon">
+    <iconset resource="pic.qrc">
+     <normaloff>:/images/images/preANN.png</normaloff>:/images/images/preANN.png</iconset>
+   </property>
+   <property name="text">
+    <string>Predict_ANN</string>
+   </property>
+   <property name="statusTip">
+    <string>预测这是什么细胞（ANN）</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <tabstops>
-  <tabstop>tabWidget</tabstop>
- </tabstops>
  <resources>
   <include location="pic.qrc"/>
  </resources>
