@@ -202,7 +202,9 @@
    <addaction name="actionPredict_ANN"/>
    <addaction name="separator"/>
    <addaction name="actionTrain_SVM"/>
+   <addaction name="actionSVM_predict"/>
    <addaction name="actionTrain_ANN"/>
+   <addaction name="actionANN_predict"/>
    <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

@@ -7,11 +7,14 @@
 #include <highgui.h>
 #include <cv.h>
 #include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
 #include "nclseg.h"
 #include "analyse.h"
 #include "classification.h"
 #include "opencv2qt.h"
 #include "svm.h"
+#include "feature.h"
 
 
 namespace Ui {
@@ -34,6 +37,8 @@ private slots:
     void on_actionAbout_triggered();
 
     void on_actionTrain_SVM_triggered();
+
+    void on_actionSVM_predict_triggered();
 
 private:
     QImage img;

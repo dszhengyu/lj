@@ -52,12 +52,14 @@ IplImage* nclseg::seg(IplImage* img)
     cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT), CV_MOP_OPEN, 3);
     cvMorphologyEx(IE, IE, 0, cvCreateStructuringElementEx(3, 3, 1, 1, CV_SHAPE_RECT), CV_MOP_CLOSE, 10);
     analyse::fillHole(IE);
+    analyse::showImg(IE, "IE");
+    analyse::showImg(BW2, "BW2");
 
 //middle algorithm
     cvAnd(BW2, IE, im);
     cvCopy(im, imcopy);//backup for watershed
     em = analyse::flood(BW2, im, &isalot);//get em and count nuclei to decide whether watershed or not
-    //qDebug("isalot:%d", isalot);
+    analyse::showImg(em, "em");
 
 //watershed ? or not?
     if (isalot) {
@@ -71,7 +73,7 @@ IplImage* nclseg::seg(IplImage* img)
     cvCvtColor(water2, water3, CV_GRAY2BGR);
     cvMin(water3, img, water3);
     cvCopy(water3, water3backup);
-    //analyse::showImg(water3, "water3");
+    analyse::showImg(water3, "water3");
 
 ////meanshift
 //    cvCvtColor(water3, luv, CV_BGR2Luv);
@@ -85,16 +87,7 @@ IplImage* nclseg::seg(IplImage* img)
     //analyse::showImg(water4, "water4");
     cvCvtColor(water4, water5, CV_GRAY2BGR);
     cvMin(water3backup, water5, water5);
-    //analyse::showImg(water5, "water5");
-
-////LBP
-//    IplImage* fgray = cvCreateImage(cvGetSize(img), img->depth, 1);
-//    IplImage* lbp = cvCreateImage(cvGetSize(img), img->depth, 1);
-//    cvCvtColor(water5, fgray, CV_BGR2GRAY);
-//    feature::LBP(fgray, lbp);
-//    analyse::showImg(lbp, "lbp");
-
-    feature::selectFeature(water3, water5);
+    analyse::showImg(water5, "water5");
 
 
     cvWaitKey(0);

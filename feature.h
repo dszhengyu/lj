@@ -1,13 +1,7 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
-#include <QMainWindow>
-#include <QDebug>
-#include <QFileDialog>
-#include <highgui.h>
-#include <cv.h>
-#include "nclseg.h"
-#include "analyse.h"
+#include "mainwindow.h"
 
 class feature
 {

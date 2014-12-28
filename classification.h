@@ -48,20 +48,17 @@
 #ifndef CLASSIFICATION_H
 #define CLASSIFICATION_H
 
-#include <QMainWindow>
-#include <QDebug>
-#include <QFileDialog>
-#include <highgui.h>
-#include <cv.h>
-#include "nclseg.h"
-#include "analyse.h"
-#include "svm.h"
+#include "mainwindow.h"
 
 class classification
 {
 public:
     classification();
     static void trainSvm(QStringList fileNames);
+    static void svmPredict(QStringList fileNames);
+
+//private:
+//     static struct svm_model *model;
 };
 
 #endif // CLASSIFICATION_H

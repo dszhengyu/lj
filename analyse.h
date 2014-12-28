@@ -1,10 +1,7 @@
 #ifndef ANALYSE_H
 #define ANALYSE_H
 
-#include <cv.h>
-#include <highgui.h>
-#include <QDebug>
-#include "nclseg.h"
+#include "mainwindow.h"
 
 class analyse
 {

@@ -16,7 +16,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
+//打开图片，处理得出细胞核
 void MainWindow::on_action_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),".",tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
@@ -32,10 +32,18 @@ void MainWindow::on_action_triggered()
     }
 }
 
+//选择图片训练SVM
 void MainWindow::on_actionTrain_SVM_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
     classification::trainSvm(fileNames);
+}
+
+//检测SVM训练结果
+void MainWindow::on_actionSVM_predict_triggered()
+{
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
+    classification::svmPredict(fileNames);
 }
 
 void MainWindow::on_actionZoom_In_triggered()
@@ -64,5 +72,7 @@ void MainWindow::on_actionAbout_triggered()
     aboutMessage.setIconPixmap(QPixmap("images/brain.png"));
     aboutMessage.exec();
 }
+
+
 
 

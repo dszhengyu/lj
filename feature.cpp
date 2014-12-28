@@ -124,9 +124,9 @@ QStringList feature::selectFeature(IplImage *src1, IplImage *src2)//src1 is whol
             cvResetImageROI(nuclei);
             cvResetImageROI(nucleib);
 
-//            analyse::showImg(temp1, "temp1");
-//            analyse::showImg(temp3, "temp3");
-//            analyse::showImg(temp5, "temp5");
+            //analyse::showImg(temp1, "temp1");
+            //analyse::showImg(temp3, "temp3");
+            //analyse::showImg(temp5, "temp5");
 
             //开始提取特征， 用tempX图片
             QStringList t1, t2, t3, t4, t5, t6;

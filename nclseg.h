@@ -1,11 +1,7 @@
 #ifndef NCLSEG_H
 #define NCLSEG_H
 
-#include <cv.h>
-#include <highgui.h>
-#include <QDebug>
-#include "analyse.h"
-#include "feature.h"
+#include "mainwindow.h"
 
 class nclseg
 {

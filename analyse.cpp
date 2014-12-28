@@ -56,7 +56,7 @@ void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
     IplImage* IsDivIg = cvCreateImage(cvGetSize(Is), IPL_DEPTH_8U, 1);
 
     if (T > 250)//choose the T value according to the V-channel of the picture.
-        T = 2;//there maybe exist a function could apply to all the picture to calculate the T value
+        T = 1;//there maybe exist a function could apply to all the picture to calculate the T value
     else if (T > 190)
         T = 4;
     else
