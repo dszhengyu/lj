@@ -233,5 +233,8 @@ QStringList feature::getPAR(IplImage *src, int mask)
     }
 
     //qDebug("%s", PAR.join("'").toLocal8Bit().data());
+
+    cvReleaseMemStorage(&storage);
+
     return PAR;
 }

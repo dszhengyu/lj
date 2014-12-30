@@ -49,6 +49,7 @@
 #define CLASSIFICATION_H
 
 #include "mainwindow.h"
+#define deminsion 18
 
 class classification
 {
@@ -56,6 +57,7 @@ public:
     classification();
     static void trainSvm(QStringList fileNames);
     static void svmPredict(QStringList fileNames);
+    static void trainSvm2(QStringList fileNames);
 
 //private:
 //     static struct svm_model *model;

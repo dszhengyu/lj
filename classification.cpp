@@ -9,15 +9,17 @@ void classification::trainSvm(QStringList fileNames)
 
     if (fileNames.length() < 1)
         return;
-    //尝试使用文件保存特征，看是否可以加快速度？？？？
-    QFile tmpFile1 = ("tmpFile1.dat");\
-    QFile tmpFile2 = ("tmpFile2.dat");
-    if (!tmpFile1.open(QIODevice::Append) || !tmpFile2.open(QIODevice::Append)) {
-        qDebug("can't open file to read && write!");
-        return;
-    }
-    QTextStream outLable(&tmpFile1);
-    QTextStream outFeature(&tmpFile2);
+
+//    //尝试使用文件保存特征，看是否可以加快速度？？？？
+//    QFile tmpFile1 = ("tmpFile1.dat");\
+//    QFile tmpFile2 = ("tmpFile2.dat");
+//    if (!tmpFile1.open(QIODevice::Append) || !tmpFile2.open(QIODevice::Append)) {
+//        qDebug("can't open file to read && write!");
+//        return;
+//    }
+//    QTextStream outLable(&tmpFile1);
+//    QTextStream outFeature(&tmpFile2);
+
 /*处理所选的所有图片，输出为两个QStringList， 标签和特征值**************************************/
     QStringList labeList, totalFeature;
     for (int i = 0; i < fileNames.length(); i++) {
@@ -38,42 +40,39 @@ void classification::trainSvm(QStringList fileNames)
         for (int j = 0; j < featureList.length(); j++) {
             labeList << lable;
             //qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
+            totalFeature << featureList.at(j);
         }
-        totalFeature << featureList.join("|");
-
-//        //将他们写入文件
-//        if (!((i + 1) % 10)) {
-//            outFeature << totalFeature.join("|") <<"|";
-//            totalFeature.clear();
-//            outFeature.flush();
-//        }
+        eachFile.~QString();
+        featureList.clear();
+        cvReleaseImage(&eachImage);
+        tmp.clear();
     }
 
-    //刷新流，再把文件内容读进来
-    outLable << labeList.join("|") << "|";
-    outFeature << totalFeature.join("|") << "|";
-    outLable.flush();
-    outFeature.flush();
-    tmpFile1.close();
-    tmpFile2.close();
-    tmpFile1.open(QIODevice::ReadOnly);
-    tmpFile2.open(QIODevice::ReadOnly);
+//    //刷新流，再把文件内容读进来
+//    outLable << labeList.join("|") << "|";
+//    outFeature << totalFeature.join("|") << "|";
+//    outLable.flush();
+//    outFeature.flush();
+//    tmpFile1.close();
+//    tmpFile2.close();
+//    tmpFile1.open(QIODevice::ReadOnly);
+//    tmpFile2.open(QIODevice::ReadOnly);
 
-    labeList = outLable.readAll().split("|");
-    totalFeature = outFeature.readAll().split("|");
-    qDebug("Done");
-    qDebug("%s", totalFeature.join("%%").toLocal8Bit().data());
+//    labeList = outLable.readAll().split("|");
+//    totalFeature = outFeature.readAll().split("|");
+//    qDebug("Done");
+//    qDebug("%s", totalFeature.join("%%").toLocal8Bit().data());
 
 /*处理标签和特征值，生成数组**********************************************************************/
 /*对 labeList 和 totalFeature 进行处理*********************************************************/
-    int l = labeList.length() - 1;//总特征数
+    int l = labeList.length();//总特征数
 //    if (l != totalFeature.length() - 1) {
 //        qDebug("ERROR: count of feature");
 //        return;
 //    }
     int dimension = totalFeature.at(0).split("'").length();//每个特征的维数
     double *y = (double *)malloc(sizeof(double) * l);
-    qDebug("%d&&%d", l, dimension);
+
     //直接malloc一个二维结构体数组，始终不能成功，从网上参考方法，将二维数组一维化，把地址传递给二维数组指针，妙哉妙哉~~~~~~
     struct svm_node ** x = new struct svm_node *[l];
     struct svm_node *x_space = new struct svm_node [l * (dimension + 1)];
@@ -94,8 +93,9 @@ void classification::trainSvm(QStringList fileNames)
         x_space[i * (dimension + 1) + dimension].index = -1;
         x_space[i * (dimension + 1) + dimension].value = 0;
         x[i] = &x_space[i * (dimension + 1)];
-    }
 
+        tmpList.clear();
+    }
 //    //打印prob结构体数组
 //    for (int i = 0; i < l; i ++) {
 //        qDebug("\t%f", y[i]);
@@ -138,6 +138,8 @@ void classification::trainSvm(QStringList fileNames)
     svm_save_model("svm_model.txt", model);
 
     //释放内存
+    labeList.clear();
+    totalFeature.clear();
     svm_destroy_param(&param);
     svm_free_and_destroy_model(&model);
     delete[] prob.x;
@@ -147,7 +149,6 @@ void classification::trainSvm(QStringList fileNames)
     resultMessage.setIconPixmap(QPixmap("images/vector.png"));
     resultMessage.exec();
 }
-
 
 void classification::svmPredict(QStringList fileNames)
 {
@@ -182,8 +183,11 @@ void classification::svmPredict(QStringList fileNames)
             totalFeature << featureList.at(j);
             //qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
         }
+        eachFile.~QString();
+        featureList.clear();
+        cvReleaseImage(&eachImage);
+        tmp.clear();
     }
-    //cvDestroyAllWindows();
 
 /*处理标签和特征值，生成数组**********************************************************************/
 /*对 labeList 和 totalFeature 进行处理*********************************************************/
@@ -211,6 +215,8 @@ void classification::svmPredict(QStringList fileNames)
         x_space[i * (dimension + 1) + dimension].index = -1;
         x_space[i * (dimension + 1) + dimension].value = 0;
         x[i] = &x_space[i * (dimension + 1)];
+
+        tmpList.clear();
     }
 
 //    //打印prob结构体数组
@@ -227,16 +233,21 @@ void classification::svmPredict(QStringList fileNames)
     for (int i = 0; i < l; i++) {
         double result;
         result = svm_predict(model, x[i]);
+        qDebug("y[i] = %lf, result = %lf", y[i], result);
         hit = (result == y[i]) ? hit + 1 : hit;
     }
 
 /*预测完成，释放内存，生成报告*****************************************************************************/
+    labeList.clear();
+    totalFeature.clear();
     delete[] x_space;
+    svm_free_and_destroy_model(&model);
     QStringList report;
-    report << "total pictures:" << QString::number(l) << "\naccurate predict: " << QString::number(hit);
+    report << "total pictures:" << QString::number(l) << "\naccurate predict: " << QString::number(hit) << "\naccuracy: " << QString::number(hit * 100 / l) << "%";
     QMessageBox resultMessage(QMessageBox::NoIcon, "结果", report.join(""));
     resultMessage.setIconPixmap(QPixmap("images/vector.png"));
     resultMessage.exec();
+    report.clear();
     return;
 
 }

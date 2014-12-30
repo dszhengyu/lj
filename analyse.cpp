@@ -18,6 +18,9 @@ int analyse::analyseV(IplImage *img)
     cvGetMinMaxHistValue(gray_hist, 0, 0, 0, &max_index);
 
     //qDebug("%d", max_index);
+
+    cvReleaseHist(&gray_hist);
+    cvReleaseImage(&v);
     return max_index;
 }
 
@@ -42,13 +45,14 @@ IplImage* analyse::analyseHist(IplImage *channel, int *ptr_max_index)
         float bin_val = cvQueryHistValue_1D(gray_hist, i);
         int intensity = cvRound(bin_val*hist_height/max_value);
         cvRectangle(hist_image,
-            cvPoint(i*scale, hist_height-1),
-            cvPoint((i+1)*scale - 1, hist_height - intensity),
-            CV_RGB(255,255,255));
+                    cvPoint(i*scale, hist_height-1),
+                    cvPoint((i+1)*scale - 1, hist_height - intensity), CV_RGB(255,255,255));
     }
     //analyse::showImg(hist_image, "hist_image");
-    return hist_image;
 
+    cvReleaseHist(&gray_hist);
+    cvReleaseImage(&hist_image);
+    return hist_image;
 }
 
 void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
@@ -83,6 +87,7 @@ void analyse::formIE(const IplImage *Is, IplImage *Ig, IplImage *IE, int T)
 
         }
     }
+    cvReleaseImage(&IsDivIg);
 }
 
 void analyse::fillHole(IplImage *hole)
@@ -92,6 +97,8 @@ void analyse::fillHole(IplImage *hole)
     cvFloodFill(temp, cvPoint(0, 0), cvScalarAll(255));
     cvNot(temp, temp);
     cvAdd(hole, temp, hole);
+
+    cvReleaseImage(&temp);
 }
 
 int analyse::Otsu(IplImage* src)
@@ -231,6 +238,9 @@ IplImage* analyse::analyseCoutours(IplImage *img)
         }
         //analyse::showImg(pic, "testing");
     }
+
+    cvReleaseMemStorage(&storage);
+
     return pic;
 }
 
@@ -263,6 +273,8 @@ IplImage* analyse::flood(IplImage *img, IplImage *im, int *isalot)
     analyse::fillHole(em);
     //qDebug("count: %d", count);
     *isalot = (count > 5 ? 1 : 0);
+
+    cvReleaseMemStorage(&storage);
     return em;
 }
 
@@ -282,6 +294,8 @@ IplImage* analyse::cvtIm2Waterseed(IplImage* img)
             cvDrawContours(waterseed, c, cvScalarAll(i += 5), cvScalarAll(i), 0, -1);
         }
     }
+
+    cvReleaseMemStorage(&storage);
     return waterseed;
 }
 
@@ -322,5 +336,16 @@ cv::Mat analyse::water(IplImage* img, IplImage *imcopy)
     imageMask.convertTo(imageMask, CV_32S);
     cv::watershed(image, imageMask);
     imageMask.convertTo(water, CV_8U, 255, 255);
+
+    cvReleaseImage(&waterseed);
+    cvReleaseImage(&gradient);
+    cvReleaseImage(&gradient2);
+    cvReleaseImage(&imwaterseed);
+    cvReleaseImage(&ero);
+    cvReleaseImage(&notimg);
+    cvReleaseImage(&backdist);
+    image.~Mat();
+    imageMask.~Mat();
+
     return water;
 }
