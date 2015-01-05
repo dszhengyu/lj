@@ -117,6 +117,7 @@ int analyse::Otsu(IplImage* src)
         }
     }
     //normalize histogram
+    //1.5.2015   I think this is not normalize? It calculate the probility the pixel come up
     int size = height * width;
     for(int i = 0; i < 256; i++)
     {

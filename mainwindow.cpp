@@ -39,7 +39,7 @@ void MainWindow::on_actionTrain_SVM_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
     classification::trainSvm(fileNames);
-    fileNames.clear();
+    //fileNames.clear();
 }
 
 //检测SVM训练结果

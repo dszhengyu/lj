@@ -32,7 +32,7 @@ void classification::trainSvm(QStringList fileNames)
         //取标签（文件名第一个字符）
         QStringList tmp = eachFile.split("/");
         QString lable = tmp.at(tmp.length() - 1).left(1);
-        qDebug("%s", lable.toLocal8Bit().data());
+        //qDebug("%s", lable.toLocal8Bit().data());
 
         //处理每张图片获取特征值（可能会有许多），并且把相应个数的标签放入lable的list中
         QStringList featureList;
@@ -47,7 +47,7 @@ void classification::trainSvm(QStringList fileNames)
         cvReleaseImage(&eachImage);
         tmp.clear();
     }
-
+//    fileNames.clear();
 //    //刷新流，再把文件内容读进来
 //    outLable << labeList.join("|") << "|";
 //    outFeature << totalFeature.join("|") << "|";
@@ -96,13 +96,7 @@ void classification::trainSvm(QStringList fileNames)
 
         tmpList.clear();
     }
-//    //打印prob结构体数组
-//    for (int i = 0; i < l; i ++) {
-//        qDebug("\t%f", y[i]);
-//        for (int j = 0; j <= dimension; j++)
-//            qDebug("index = %d, value = %f", x[i][j].index, x[i][j].value);
-//        qDebug("\n");
-//    }
+
 
 
 /*构建svm_problem以及svm_parameter,训练svm并保存svm_model************************************************************/
@@ -148,6 +142,7 @@ void classification::trainSvm(QStringList fileNames)
     QMessageBox resultMessage(QMessageBox::NoIcon, "SVM训练完成", "训练完成");
     resultMessage.setIconPixmap(QPixmap("images/vector.png"));
     resultMessage.exec();
+    return;
 }
 
 void classification::svmPredict(QStringList fileNames)
@@ -181,7 +176,7 @@ void classification::svmPredict(QStringList fileNames)
         for (int j = 0; j < featureList.length(); j++) {
             labeList << lable;
             totalFeature << featureList.at(j);
-            //qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
+            qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
         }
         eachFile.~QString();
         featureList.clear();

@@ -75,7 +75,7 @@ IplImage* nclseg::seg(IplImage* img)
     //watershed ? or not?，只留water3
         if (isalot) {
             water = analyse::water(BW2, imcopy);
-            cvCopy(&IplImage(water), water2);
+            //cvCopy(&IplImage(water), water2);
             cvAnd(em, water2, water2);
         }
         else
@@ -195,7 +195,7 @@ QStringList nclseg::seg4train(IplImage* img)
 //watershed ? or not?，只留water3
     if (isalot) {
         water = analyse::water(BW2, imcopy);
-        cvCopy(&IplImage(water), water2);
+        //cvCopy(&IplImage(water), water2);
         cvAnd(em, water2, water2);
     }
     else
@@ -273,11 +273,13 @@ QStringList nclseg::seg4train(IplImage* img)
             //为临时图片申请空间，复制图片
             IplImage* temp1 = cvCreateImage(cvGetSize(nuclei), 8, 3);//细胞核bgr
             IplImage* temp2 = cvCreateImage(cvGetSize(nucleib), 8, 1);//细胞核gray
+            IplImage* temp22 = cvCreateImage(cvGetSize(nucleib), 8, 1);//细胞核gray
             IplImage* temp3 = cvCreateImage(cvGetSize(wholeCell), 8, 3);//整个细胞bgr
             IplImage* temp4 = cvCreateImage(cvGetSize(wholeCellb), 8, 1);//整个细胞gray
             IplImage* temp5 = cvCreateImage(cvGetSize(wholeCell), 8, 3);//细胞质bgr
             cvCopy(nuclei, temp1);
             cvCopy(nucleib, temp2);
+            cvCopy(nucleib, temp22);
             cvCopy(wholeCell, temp3);
             cvCopy(wholeCellb, temp4);
             //细胞质图片
@@ -294,7 +296,7 @@ QStringList nclseg::seg4train(IplImage* img)
             //analyse::showImg(temp5, "temp5");
 
             //开始提取特征， 用tempX图片
-            QStringList t1, t2, t3, t4, t5, t6;
+            QStringList t1, t2, t22, t3, t4, t5, t6;
             t1 = feature::meanRgb(temp1);
             t3 = feature::meanRgb(temp3);
             t5 = feature::meanRgb(temp5);
@@ -303,6 +305,7 @@ QStringList nclseg::seg4train(IplImage* img)
             t4 = feature::getPAR(temp4, 4);//3-d
             t6 << QString::number(t4.at(1).toDouble() - t2.at(1).toDouble()) << QString::number(t2.at(1).toDouble() / t4.at(1).toDouble());//2-d
 
+            t22 = feature::getLBP(temp22);
             //细胞核面积为0，说明ROI设置有错，跳过，特征值不要啦
             if (t2.at(1).toDouble() == 0) {
                 //qDebug("empty ROI");
@@ -311,10 +314,10 @@ QStringList nclseg::seg4train(IplImage* img)
             //如果细胞质面积为0，说明没有细胞质， 应该对BGR分量另外处理
 
             if (t6.at(0).toDouble() == 0) {
-                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << "0'0'0" << t6.join("'");
+                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << "0'0'0" << t6.join("'") <<t22.join("'");
             }
             else {
-                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << t5.join("'") << t6.join("'");
+                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << t5.join("'") << t6.join("'") << t22.join("'");
             }
 
             //把当前细胞的特征值放入图片总特征值中
@@ -334,6 +337,7 @@ QStringList nclseg::seg4train(IplImage* img)
 
             cvReleaseImage(&temp1);
             cvReleaseImage(&temp2);
+            cvReleaseImage(&temp22);
             cvReleaseImage(&temp3);
             cvReleaseImage(&temp4);
             cvReleaseImage(&temp5);
