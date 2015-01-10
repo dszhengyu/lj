@@ -16,6 +16,7 @@ IplImage* nclseg::seg(IplImage* img)
     IplImage* BW2 = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* HSV = cvCreateImage(cvGetSize(img), img->depth, 3);
     IplImage* Is = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* Iv = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* Ig = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* IE = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* im = cvCreateImage(cvGetSize(img), img->depth, 1);
@@ -34,14 +35,22 @@ IplImage* nclseg::seg(IplImage* img)
     //left side，最后需要BW2即可，其他释放
         cvCvtColor(img, gray, CV_BGR2GRAY);
         cvCvtColor(img, HSV, CV_BGR2HSV);
-        cvSplit(HSV, 0, Is, 0, 0);
+        cvSplit(HSV, 0, Is, Iv, 0);
         cvSplit(img, Ib, Ig, 0, 0);
-        cvThreshold(gray, BW1, 180, 255, CV_THRESH_BINARY_INV);//125
+        cvThreshold(gray, BW1, 125, 255, CV_THRESH_BINARY_INV);//125
         cvThreshold(gray, BJ, 0, 255, CV_THRESH_OTSU);
         cvThreshold(BJ, BJ, 100, 255, CV_THRESH_BINARY_INV);
         cvThreshold(Ib, BW3, analyse::Otsu(Ib), 255, CV_THRESH_BINARY_INV);
         cvSub(BW3, BW1, Redcell);
         cvSub(BJ, Redcell, BW2);
+
+
+        analyse::showImg(img, "img");
+        analyse::showImg(Redcell, "Redcell");
+        analyse::showImg(BJ, "BJ");
+        analyse::showImg(BW1, "BW1");
+        analyse::showImg(Iv, "Iv");
+
 
         cvReleaseImage(&gray);
         cvReleaseImage(&BW1);

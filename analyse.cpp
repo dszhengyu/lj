@@ -345,8 +345,8 @@ cv::Mat analyse::water(IplImage* img, IplImage *imcopy)
     cvReleaseImage(&ero);
     cvReleaseImage(&notimg);
     cvReleaseImage(&backdist);
-    image.~Mat();
-    imageMask.~Mat();
+//    image.~Mat();
+//    imageMask.~Mat();
 
     return water;
 }

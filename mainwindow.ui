@@ -140,7 +140,7 @@
      <x>0</x>
      <y>0</y>
      <width>761</width>
-     <height>23</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">
@@ -149,6 +149,7 @@
     </property>
     <addaction name="action"/>
     <addaction name="action_S"/>
+    <addaction name="actionGram_Schmidt"/>
    </widget>
    <widget class="QMenu" name="menu_T">
     <property name="title">
@@ -193,6 +194,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="action"/>
+   <addaction name="actionGram_Schmidt"/>
    <addaction name="action_S"/>
    <addaction name="separator"/>
    <addaction name="actionZoom_In"/>
@@ -344,6 +346,15 @@
    </property>
    <property name="statusTip">
     <string>预测这是什么细胞（ANN）</string>
+   </property>
+  </action>
+  <action name="actionGram_Schmidt">
+   <property name="icon">
+    <iconset resource="pic.qrc">
+     <normaloff>:/images/images/Gram-Schmidt.png</normaloff>:/images/images/Gram-Schmidt.png</iconset>
+   </property>
+   <property name="text">
+    <string>Gram-Schmidt</string>
    </property>
   </action>
  </widget>

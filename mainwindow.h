@@ -15,7 +15,7 @@
 #include "opencv2qt.h"
 #include "svm.h"
 #include "feature.h"
-
+#include "gram_schmidt_seg.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +39,8 @@ private slots:
     void on_actionTrain_SVM_triggered();
 
     void on_actionSVM_predict_triggered();
+
+    void on_actionGram_Schmidt_triggered();
 
 private:
     QImage img;

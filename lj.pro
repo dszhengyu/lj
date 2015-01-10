@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     analyse.cpp \
     feature.cpp \
     classification.cpp \
-    svm.cpp
+    svm.cpp \
+    gram_schmidt_seg.cpp
 
 HEADERS  += mainwindow.h \
     opencv2qt.h \
@@ -27,20 +28,20 @@ HEADERS  += mainwindow.h \
     analyse.h \
     feature.h \
     classification.h \
-    svm.h
+    svm.h \
+    gram_schmidt_seg.h
 
 FORMS    += mainwindow.ui
 
 RC_ICONS = microscope.ico
 
-INCLUDEPATH += Z:\lj\opencv\build\include\
-Z:\lj\opencv\build\include\opencv\
-Z:\lj\opencv\build\include\opencv2
+INCLUDEPATH += /usr/local/include \
+                /usr/local/include/opencv \
+                /usr/local/include/opencv2
 
-LIBS += Z:\lj\opencv\build\x64\vc12\lib\opencv_core249d.lib\
-Z:\lj\opencv\build\x64\vc12\lib\opencv_highgui249d.lib\
-Z:\lj\opencv\build\x64\vc12\lib\opencv_imgproc249d.lib
-
+LIBS += /usr/local/lib/libopencv_highgui.so \
+        /usr/local/lib/libopencv_core.so    \
+        /usr/local/lib/libopencv_imgproc.so
 RESOURCES += \
     pic.qrc
 

@@ -74,3 +74,20 @@ void MainWindow::on_actionAbout_triggered()
 
 
 
+
+void MainWindow::on_actionGram_Schmidt_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),".",tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
+
+    if (fileName.length() != 0) {
+        //qDebug("%s", fileName.toLocal8Bit().data());
+        IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
+        gram_schmidt_seg::execGs(newImage);
+
+//        QPixmap img("nuclei.jpg");
+//        ui->label->setScaledContents(true);
+//        ui->label->setPixmap(img);
+
+        cvReleaseImage(&newImage);
+    }
+}
