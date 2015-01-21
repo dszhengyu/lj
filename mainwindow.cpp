@@ -26,7 +26,7 @@ void MainWindow::on_action_triggered()
         IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
         nclseg::seg(newImage);
 
-        QPixmap img("nuclei.jpg");
+        QPixmap img("nuclei.png");
         ui->label->setScaledContents(true);
         ui->label->setPixmap(img);
 
@@ -50,6 +50,7 @@ void MainWindow::on_actionSVM_predict_triggered()
     fileNames.clear();
 }
 
+//Zoom In
 void MainWindow::on_actionZoom_In_triggered()
 {
     if (img.isNull())
@@ -59,6 +60,7 @@ void MainWindow::on_actionZoom_In_triggered()
     }
 }
 
+//About
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox aboutMessage(QMessageBox::NoIcon, "关于", "<h2 id=\"software-developed\">Software Developed</h2>\
@@ -72,9 +74,7 @@ void MainWindow::on_actionAbout_triggered()
 }
 
 
-
-
-
+//Gram_Schmidt
 void MainWindow::on_actionGram_Schmidt_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this,tr("Open Image"),".",tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));

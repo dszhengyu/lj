@@ -42,7 +42,7 @@ void classification::trainSvm(QStringList fileNames)
             //qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
             totalFeature << featureList.at(j);
         }
-        eachFile.~QString();
+        eachFile.clear();
         featureList.clear();
         cvReleaseImage(&eachImage);
         tmp.clear();
@@ -61,16 +61,41 @@ void classification::trainSvm(QStringList fileNames)
 //    labeList = outLable.readAll().split("|");
 //    totalFeature = outFeature.readAll().split("|");
 //    qDebug("Done");
-//    qDebug("%s", totalFeature.join("%%").toLocal8Bit().data());
+    qDebug("%s", totalFeature.join("%%").toLocal8Bit().data());
+
+
+
+/************************nomalization!!!!!!!!!!!!!!!!!!!!!!!!*********************************/
+    int l = labeList.length();//总特征数
+
+    int dimension = totalFeature.at(0).split("'").length();//每个特征的维数
+
+    double max[dimension];
+    double min[dimension];
+
+    for (int j = 0; j < dimension; j++) {
+        max[j] = -11111111111111111;
+        min[j] = 111111111111111111;
+    }
+
+    for (int i = 0; i < l; i++) {
+
+        QStringList tmpList = totalFeature.at(i).split("'");
+
+        for (int j = 0; j < dimension; j++) {
+            max[j] = max[j] > tmpList.at(j).toDouble() ? max[j] : tmpList.at(j).toDouble();
+            min[j] = min[j] < tmpList.at(j).toDouble() ? min[j] : tmpList.at(j).toDouble();
+        }
+        tmpList.clear();
+    }
+
+    for (int j = 0; j < dimension; j++) {
+        qDebug("j = %d, max = %lf, min = %lf", j, max[j], min[j]);
+    }
 
 /*处理标签和特征值，生成数组**********************************************************************/
 /*对 labeList 和 totalFeature 进行处理*********************************************************/
-    int l = labeList.length();//总特征数
-//    if (l != totalFeature.length() - 1) {
-//        qDebug("ERROR: count of feature");
-//        return;
-//    }
-    int dimension = totalFeature.at(0).split("'").length();//每个特征的维数
+
     double *y = (double *)malloc(sizeof(double) * l);
 
     //直接malloc一个二维结构体数组，始终不能成功，从网上参考方法，将二维数组一维化，把地址传递给二维数组指针，妙哉妙哉~~~~~~
@@ -87,7 +112,8 @@ void classification::trainSvm(QStringList fileNames)
 
         for (int j = 0; j < dimension; j++) {
             x_space[i * (dimension + 1) + j].index = j + 1;
-            x_space[i * (dimension + 1) + j].value = tmpList.at(j).toDouble();
+            x_space[i * (dimension + 1) + j].value = (tmpList.at(j).toDouble() - min[j]) / (max[j] - min[j]);
+//            qDebug("%lf", x_space[i * (dimension + 1) + j].value);
 
         }
         x_space[i * (dimension + 1) + dimension].index = -1;
@@ -96,7 +122,6 @@ void classification::trainSvm(QStringList fileNames)
 
         tmpList.clear();
     }
-
 
 
 /*构建svm_problem以及svm_parameter,训练svm并保存svm_model************************************************************/
@@ -176,7 +201,7 @@ void classification::svmPredict(QStringList fileNames)
         for (int j = 0; j < featureList.length(); j++) {
             labeList << lable;
             totalFeature << featureList.at(j);
-            qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
+//            qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
         }
         eachFile.~QString();
         featureList.clear();
@@ -189,6 +214,29 @@ void classification::svmPredict(QStringList fileNames)
 /*生成 struct svm_node ** x 和 double *y  ****************************************************************************/
     int l = totalFeature.length();//总特征数
     int dimension = totalFeature.at(0).split("'").length();//每个特征的维数
+
+    //nomalize
+    double max[dimension];
+    double min[dimension];
+
+    for (int j = 0; j < dimension; j++) {
+        max[j] = -11111111111111111;
+        min[j] = 111111111111111111;
+    }
+
+    for (int i = 0; i < l; i++) {
+
+        QStringList tmpList = totalFeature.at(i).split("'");
+
+        for (int j = 0; j < dimension; j++) {
+            max[j] = max[j] > tmpList.at(j).toDouble() ? max[j] : tmpList.at(j).toDouble();
+            min[j] = min[j] < tmpList.at(j).toDouble() ? min[j] : tmpList.at(j).toDouble();
+        }
+        tmpList.clear();
+    }
+
+
+
     double *y = (double *)malloc(sizeof(double) * l);
 
     //直接malloc一个二维结构体数组，始终不能成功，从网上参考方法，将二维数组一维化，把地址传递给二维数组指针，妙哉妙哉~~~~~~
@@ -204,7 +252,7 @@ void classification::svmPredict(QStringList fileNames)
         QStringList tmpList = totalFeature.at(i).split("'");
         for (int j = 0; j < dimension; j++) {
             x_space[i * (dimension + 1) + j].index = j + 1;
-            x_space[i * (dimension + 1) + j].value = tmpList.at(j).toDouble();
+            x_space[i * (dimension + 1) + j].value = (tmpList.at(j).toDouble() - min[j]) / (max[j] - min[j]);
 
         }
         x_space[i * (dimension + 1) + dimension].index = -1;

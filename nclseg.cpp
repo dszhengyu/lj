@@ -45,11 +45,11 @@ IplImage* nclseg::seg(IplImage* img)
         cvSub(BJ, Redcell, BW2);
 
 
-        analyse::showImg(img, "img");
-        analyse::showImg(Redcell, "Redcell");
-        analyse::showImg(BJ, "BJ");
-        analyse::showImg(BW1, "BW1");
-        analyse::showImg(Iv, "Iv");
+//        analyse::showImg(img, "img");
+//        analyse::showImg(Redcell, "Redcell");
+//        analyse::showImg(BJ, "BJ");
+//        analyse::showImg(BW1, "BW1");
+//        analyse::showImg(Iv, "Iv");
 
 
         cvReleaseImage(&gray);
@@ -124,8 +124,8 @@ IplImage* nclseg::seg(IplImage* img)
 
     cvWaitKey(0);
     cvDestroyAllWindows();
-    cvSaveImage("wholeCell.jpg", water3);
-    cvSaveImage("nuclei.jpg", water5);
+    cvSaveImage("wholeCell.png", water3);
+    cvSaveImage("nuclei.png", water5);
 
     cvReleaseImage(&water3);
     cvReleaseImage(&water5);
@@ -165,7 +165,7 @@ QStringList nclseg::seg4train(IplImage* img)
     cvCvtColor(img, HSV, CV_BGR2HSV);
     cvSplit(HSV, 0, Is, 0, 0);
     cvSplit(img, Ib, Ig, 0, 0);
-    cvThreshold(gray, BW1, 180, 255, CV_THRESH_BINARY_INV);//125
+    cvThreshold(gray, BW1, 125, 255, CV_THRESH_BINARY_INV);//125
     cvThreshold(gray, BJ, 0, 255, CV_THRESH_OTSU);
     cvThreshold(BJ, BJ, 100, 255, CV_THRESH_BINARY_INV);
     cvThreshold(Ib, BW3, analyse::Otsu(Ib), 255, CV_THRESH_BINARY_INV);
@@ -255,6 +255,14 @@ QStringList nclseg::seg4train(IplImage* img)
     cvCopy(water5, nuclei);
     cvCvtColor(water5, nucleib, CV_BGR2GRAY);
 
+
+//    analyse::showImg(img, "img");
+//    analyse::showImg(wholeCell, "wholeCell");
+//    analyse::showImg(nuclei, "nuclei");
+//    cvWaitKey(0);
+
+
+
     cvReleaseImage(&water3);
     cvReleaseImage(&water5);
 
@@ -293,16 +301,12 @@ QStringList nclseg::seg4train(IplImage* img)
             cvCopy(wholeCellb, temp4);
             //细胞质图片
             cvSub(temp3, temp1, temp5);
-            //            cvSub(temp4, temp2, temp6);
+
             //取消ROI设置
             cvResetImageROI(wholeCell);
             cvResetImageROI(wholeCellb);
             cvResetImageROI(nuclei);
             cvResetImageROI(nucleib);
-
-            //analyse::showImg(temp1, "temp1");
-            //analyse::showImg(temp3, "temp3");
-            //analyse::showImg(temp5, "temp5");
 
             //开始提取特征， 用tempX图片
             QStringList t1, t2, t22, t3, t4, t5, t6;
@@ -320,14 +324,18 @@ QStringList nclseg::seg4train(IplImage* img)
                 //qDebug("empty ROI");
                 continue;
             }
-            //如果细胞质面积为0，说明没有细胞质， 应该对BGR分量另外处理
+//            //如果细胞质面积为0，说明没有细胞质， 应该对BGR分量另外处理
 
-            if (t6.at(0).toDouble() == 0) {
-                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << "0'0'0" << t6.join("'") <<t22.join("'");
-            }
-            else {
-                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << t5.join("'") << t6.join("'") << t22.join("'");
-            }
+//            if (t6.at(0).toDouble() == 0) {
+//                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << "0'0'0" << t6.join("'") <<t22.join("'");
+//            }
+//            else {
+//                eachFeature << t2.join("'") << t1.join("'") << t4.join("'") << t3.join("'") << t5.join("'") << t6.join("'") << t22.join("'");
+//            }
+
+/************************************************************************/
+//Jan 21 modified, extract xibaozhi feature
+            eachFeature << t2.join("'") << t1.join("'") <<t22.join("'");
 
             //把当前细胞的特征值放入图片总特征值中
             features << eachFeature.join("'");
@@ -335,7 +343,10 @@ QStringList nclseg::seg4train(IplImage* img)
 
             //清空每张图片特征值的list，为下一次做准备
             eachFeature.clear();
-            //if (cvWaitKey(0)== 27) break;
+
+//            analyse::showImg(temp1, "temp1");
+//            analyse::showImg(temp3, "temp3");
+//            if (cvWaitKey(0)== 27) break;
 
             t1.clear();
             t2.clear();
