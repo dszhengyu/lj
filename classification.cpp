@@ -28,6 +28,7 @@ void classification::trainSvm(QStringList fileNames)
         //处理路径名并打开图片
         QString eachFile = fileNames.at(i);//qDebug("%s", eachFile.toLocal8Bit().data());
         IplImage* eachImage = cvLoadImage(eachFile.toLocal8Bit().data());
+        cout << eachFile.toLocal8Bit().data() << endl;
 
         //取标签（文件名第一个字符）
         QStringList tmp = eachFile.split("/");
@@ -39,7 +40,6 @@ void classification::trainSvm(QStringList fileNames)
         featureList = nclseg::seg4train(eachImage);
         for (int j = 0; j < featureList.length(); j++) {
             labeList << lable;
-            //qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
             totalFeature << featureList.at(j);
         }
         eachFile.clear();
@@ -61,7 +61,6 @@ void classification::trainSvm(QStringList fileNames)
 //    labeList = outLable.readAll().split("|");
 //    totalFeature = outFeature.readAll().split("|");
 //    qDebug("Done");
-    qDebug("%s", totalFeature.join("%%").toLocal8Bit().data());
 
 
 
@@ -70,8 +69,8 @@ void classification::trainSvm(QStringList fileNames)
 
     int dimension = totalFeature.at(0).split("'").length();//每个特征的维数
 
-    double max[dimension];
-    double min[dimension];
+    double *max = (double*)malloc(sizeof(double) * dimension);
+    double *min = (double*)malloc(sizeof(double) * dimension);
 
     for (int j = 0; j < dimension; j++) {
         max[j] = -11111111111111111;
@@ -89,9 +88,9 @@ void classification::trainSvm(QStringList fileNames)
         tmpList.clear();
     }
 
-    for (int j = 0; j < dimension; j++) {
-        qDebug("j = %d, max = %lf, min = %lf", j, max[j], min[j]);
-    }
+//    for (int j = 0; j < dimension; j++) {
+//        qDebug("j = %d, max = %lf, min = %lf", j, max[j], min[j]);
+//    }
 
 /*处理标签和特征值，生成数组**********************************************************************/
 /*对 labeList 和 totalFeature 进行处理*********************************************************/
@@ -112,15 +111,21 @@ void classification::trainSvm(QStringList fileNames)
 
         for (int j = 0; j < dimension; j++) {
             x_space[i * (dimension + 1) + j].index = j + 1;
+//            x_space[i * (dimension + 1) + j].value = tmpList.at(j).toDouble();
             x_space[i * (dimension + 1) + j].value = (tmpList.at(j).toDouble() - min[j]) / (max[j] - min[j]);
-//            qDebug("%lf", x_space[i * (dimension + 1) + j].value);
-
         }
         x_space[i * (dimension + 1) + dimension].index = -1;
         x_space[i * (dimension + 1) + dimension].value = 0;
         x[i] = &x_space[i * (dimension + 1)];
 
         tmpList.clear();
+    }
+
+    for (int i = 0; i < l; i++) {
+        for (int j = 0; j < dimension; j++) {
+            cout << x[i][j].index << ": " << x[i][j].value << "\t";
+        }
+        cout << endl;
     }
 
 
@@ -132,8 +137,8 @@ void classification::trainSvm(QStringList fileNames)
 
     struct svm_parameter param;
     param.svm_type = C_SVC;
-    param.kernel_type = RBF;
-    param.degree = 3;
+    param.kernel_type = POLY;
+    param.degree = 6;
     param.gamma = 0;
     param.coef0 = 0;
     param.nu = 0.5;
@@ -170,6 +175,8 @@ void classification::trainSvm(QStringList fileNames)
     return;
 }
 
+
+
 void classification::svmPredict(QStringList fileNames)
 {
 /*错误检测，文件名为空以及没有svm_model***************************************************/
@@ -203,7 +210,7 @@ void classification::svmPredict(QStringList fileNames)
             totalFeature << featureList.at(j);
 //            qDebug("%s\n", featureList.at(j).toLocal8Bit().data());
         }
-        eachFile.~QString();
+//        eachFile.~QString();
         featureList.clear();
         cvReleaseImage(&eachImage);
         tmp.clear();
@@ -215,9 +222,9 @@ void classification::svmPredict(QStringList fileNames)
     int l = totalFeature.length();//总特征数
     int dimension = totalFeature.at(0).split("'").length();//每个特征的维数
 
-    //nomalize
-    double max[dimension];
-    double min[dimension];
+//nomalization
+    double *max = (double*)malloc(sizeof(double) * dimension);
+    double *min = (double*)malloc(sizeof(double) * dimension);
 
     for (int j = 0; j < dimension; j++) {
         max[j] = -11111111111111111;
@@ -252,6 +259,7 @@ void classification::svmPredict(QStringList fileNames)
         QStringList tmpList = totalFeature.at(i).split("'");
         for (int j = 0; j < dimension; j++) {
             x_space[i * (dimension + 1) + j].index = j + 1;
+//            x_space[i * (dimension + 1) + j].value = tmpList.at(j).toDouble();
             x_space[i * (dimension + 1) + j].value = (tmpList.at(j).toDouble() - min[j]) / (max[j] - min[j]);
 
         }
@@ -262,13 +270,12 @@ void classification::svmPredict(QStringList fileNames)
         tmpList.clear();
     }
 
-//    //打印prob结构体数组
-//    for (int i = 0; i < l; i ++) {
-//        qDebug("\t%f", y[i]);
-//        for (int j = 0; j <= dimension; j++)
-//            qDebug("index = %d, value = %f", x[i][j].index, x[i][j].value);
-//        qDebug("\n");
-//    }
+    for (int i = 0; i < l; i++) {
+        for (int j = 0; j < dimension + 1; j++) {
+            cout << x[i][j].index << ": " << x[i][j].value << "\t";
+        }
+        cout << endl;
+    }
 
 /*载入svm_model, 进行预测*****************************************************************************/
 
@@ -276,7 +283,7 @@ void classification::svmPredict(QStringList fileNames)
     for (int i = 0; i < l; i++) {
         double result;
         result = svm_predict(model, x[i]);
-        qDebug("y[i] = %lf, result = %lf", y[i], result);
+        qDebug("y[i] = %lf, result = %.0lf", y[i], result);
         hit = (result == y[i]) ? hit + 1 : hit;
     }
 

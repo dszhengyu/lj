@@ -269,8 +269,10 @@ QStringList feature::getPAR(IplImage *src, int mask)
         CvSeq* c = contours;
         for (; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 1000) continue;
-            perimeter = perimeter > cvArcLength(c) ? perimeter : cvArcLength(c);
-            area = area > cvContourArea(c) ? area : cvContourArea(c);
+            perimeter += cvArcLength(c);
+            area += cvContourArea(c);
+//            perimeter = perimeter > cvArcLength(c) ? perimeter : cvArcLength(c);
+//            area = area > cvContourArea(c) ? area : cvContourArea(c);
             i++;
             //qDebug("\tmask = %d, i = %d, perimeter = %f, area = %f", mask, i, perimeter, area);
         }

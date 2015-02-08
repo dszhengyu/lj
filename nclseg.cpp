@@ -76,7 +76,7 @@ IplImage* nclseg::seg(IplImage* img)
     //middle algorithm，留BW2,em，imcopy
         cvAnd(BW2, IE, im);
         cvCopy(im, imcopy);//backup for watershed
-        em = analyse::flood(BW2, im, &isalot);//get em and count nuclei to decide whether watershed or not
+        em = analyse::flood(BW2, im, isalot);//get em and count nuclei to decide whether watershed or not
 
         cvReleaseImage(&IE);
         cvReleaseImage(&im);
@@ -149,7 +149,7 @@ QStringList nclseg::seg4train(IplImage* img)
     IplImage* IE = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* im = cvCreateImage(cvGetSize(img), img->depth, 1);
     IplImage* imcopy = cvCreateImage(cvGetSize(img), img->depth, 1);
-    IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
+    IplImage* em;
     IplImage* water2 = cvCreateImage(cvGetSize(img), img->depth, 1);
     cv::Mat water;
     IplImage* water3 = cvCreateImage(cvGetSize(img), img->depth, 3);
@@ -196,8 +196,7 @@ QStringList nclseg::seg4train(IplImage* img)
 //middle algorithm，留BW2,em，imcopy
     cvAnd(BW2, IE, im);
     cvCopy(im, imcopy);//backup for watershed
-    em = analyse::flood(BW2, im, &isalot);//get em and count nuclei to decide whether watershed or not
-
+    em = analyse::flood(BW2, im, isalot);//get em and count nuclei to decide whether watershed or not
     cvReleaseImage(&IE);
     cvReleaseImage(&im);
 
@@ -240,6 +239,8 @@ QStringList nclseg::seg4train(IplImage* img)
     cvReleaseImage(&water4);
     cvReleaseImage(&luv);
     cvReleaseImage(&mean);
+
+
 
 
     //准备图片，整个细胞bgr， gray，轮廓分析备份，  细胞核bgr， gray，
@@ -336,10 +337,11 @@ QStringList nclseg::seg4train(IplImage* img)
 /************************************************************************/
 //Jan 21 modified, extract xibaozhi feature
             eachFeature << t2.join("'") << t1.join("'") <<t22.join("'");
+/**********************************************************************/
 
             //把当前细胞的特征值放入图片总特征值中
             features << eachFeature.join("'");
-            //qDebug("%s\n", eachFeature.join("'").toLocal8Bit().data());
+            cout << eachFeature.join("'").toLocal8Bit().data() << endl;
 
             //清空每张图片特征值的list，为下一次做准备
             eachFeature.clear();

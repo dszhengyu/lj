@@ -16,12 +16,17 @@ public:
     static void fillHole(IplImage* hole);
     static int Otsu(IplImage* src);
     static int Otsu2(IplImage* src);
-    static void showImg(IplImage* img, char *s);
+    inline static void showImg(IplImage* img, char *s);
     static IplImage* analyseCoutours(IplImage* img);
-    static IplImage* flood(IplImage* img, IplImage* im, int *isalot);
+    static IplImage* flood(IplImage* img, IplImage* im, int &isalot);
     static IplImage* cvtIm2Waterseed(IplImage* img);
     static cv::Mat water(IplImage* BW2, IplImage* imcopy);
 };
 
+inline void analyse::showImg(IplImage *img, char *s)
+{
+    cvNamedWindow(s, 0);
+    cvShowImage(s, img);
+}
 
 #endif // ANALYSE_H

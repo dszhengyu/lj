@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
+#include <iostream>
+#include <array>
 #include "nclseg.h"
 #include "analyse.h"
 #include "classification.h"
@@ -16,6 +18,10 @@
 #include "svm.h"
 #include "feature.h"
 #include "gram_schmidt_seg.h"
+
+using std::cout;
+using std::array;
+using std::endl;
 
 namespace Ui {
 class MainWindow;
