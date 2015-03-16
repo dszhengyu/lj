@@ -58,6 +58,7 @@ IplImage *gram_schmidt_seg::execGs(IplImage *img)
     cvReleaseImage(&Is);
     cvReleaseImage(&Ig);
 
+    return nullptr;
 }
 
 CvScalar gram_schmidt_seg::meanBgr(IplImage *src)

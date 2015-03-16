@@ -209,12 +209,6 @@ int analyse::Otsu2(IplImage* src) //ignore 0
     return threshold;
 }
 
-void analyse::showImg(IplImage *img, char *s)
-{
-    cvNamedWindow(s, 0);
-    cvShowImage(s, img);
-}
-
 IplImage* analyse::analyseCoutours(IplImage *img)
 {
     IplImage* pic = cvCreateImage(cvGetSize(img), 8, 1);
@@ -246,16 +240,16 @@ IplImage* analyse::analyseCoutours(IplImage *img)
 }
 
 
-IplImage* analyse::flood(IplImage *img, IplImage *im, int *isalot)
+IplImage* analyse::flood(IplImage *img, IplImage *im, int &isalot)
 {
     IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
     CvMemStorage* storage = cvCreateMemStorage(0);
     CvSeq* contours = 0;
-    CvPoint point[10];
+    CvPoint point[20];
     int count = 0;
-
     cvCopy(img, em);
     cvThreshold(em, em, 200, 150, CV_THRESH_BINARY);
+
     cvFindContours(im, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
     if (contours) {
         CvSeq* c = contours;
@@ -272,9 +266,7 @@ IplImage* analyse::flood(IplImage *img, IplImage *im, int *isalot)
     }
     cvThreshold(em, em, 200, 255, CV_THRESH_BINARY);
     analyse::fillHole(em);
-    //qDebug("count: %d", count);
-    *isalot = (count > 5 ? 1 : 0);
-
+    isalot = (count > 5 ? 1 : 0);
     cvReleaseMemStorage(&storage);
     return em;
 }

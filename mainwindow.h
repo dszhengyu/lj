@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
+#include <iostream>
+#include <array>
 #include "nclseg.h"
 #include "analyse.h"
 #include "classification.h"
@@ -20,6 +22,10 @@
 #include <ml.h>
 #include <vector>
 
+
+using std::cout;
+using std::array;
+using std::endl;
 
 namespace Ui {
 class MainWindow;
