@@ -21,7 +21,9 @@
 #include "annpredictor.h"
 #include <ml.h>
 #include <vector>
-
+#include <stdexcept>
+#include <algorithm>
+#include <iterator>
 
 using std::cout;
 using std::array;

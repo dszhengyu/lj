@@ -1,5 +1,5 @@
-#summerize the work before
---2015-3-16-9:03 AM  
+#LJ
+##summerize the work before
 
 environment:  
 * Ubuntu 14.04LTS  
@@ -25,8 +25,10 @@ implement ANN and code in C++ ways!
 
 done.
 
+--2015-3-16-9:03 AM  
+
+
 ******
-#LJ
 This program is programed in C++, which based on Qt and use opencv...
 
 ###算了还是用中文吧

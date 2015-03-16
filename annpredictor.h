@@ -3,20 +3,28 @@
 
 #include "mainwindow.h"
 
+using std::vector;
+using cv::Mat;
+
 class AnnPredictor
 {
 public:
-    explicit AnnPredictor(QStringList &fileNames) : files(fileNames) {};
+    explicit AnnPredictor(QStringList &files) :
+        fileNames(files),inputs(nullptr), outputs(nullptr), label(nullptr) {};
     void train() const;
     void predict() const;
+    ~AnnPredictor() {delete inputs; delete outputs; delete label;};
 
+protected:
+    void process() const;
 private:
-    QStringList files;
+    QStringList fileNames;
     const char *modelName = "annmodel.dat";
-    cv::Mat inputs;
-    cv::Mat outputs;
-    cv::Mat label;
+    mutable cv::Mat *inputs;
+    mutable cv::Mat *outputs;
+    mutable cv::Mat *label;
 };
 
+extern const int dimension;
 
 #endif // ANNPREDICTOR_H

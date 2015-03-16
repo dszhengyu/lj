@@ -2,13 +2,14 @@
 #define NCLSEG_H
 
 #include "mainwindow.h"
+using std::vector;
 
 class nclseg
 {
 public:
     nclseg();
 public:
-    static IplImage* seg(IplImage* img);
+    static vector<IplImage *> seg(IplImage* img);
     static QStringList seg4train(IplImage* img);
 };
 

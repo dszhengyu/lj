@@ -38,7 +38,7 @@ void MainWindow::on_action_triggered()
 void MainWindow::on_actionTrain_SVM_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
-    classification::trainSvm(fileNames);
+//    classification::trainSvm(fileNames);
     //fileNames.clear();
 }
 
@@ -46,7 +46,7 @@ void MainWindow::on_actionTrain_SVM_triggered()
 void MainWindow::on_actionSVM_predict_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
-    classification::svmPredict(fileNames);
+//    classification::svmPredict(fileNames);
     fileNames.clear();
 }
 

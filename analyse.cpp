@@ -276,15 +276,15 @@ IplImage* analyse::cvtIm2Waterseed(IplImage* img)
 {
     IplImage* waterseed = cvCreateImage(cvGetSize(img), img->depth, 1);
     cvZero(waterseed);
-    int i = 10;
     CvMemStorage* storage = cvCreateMemStorage(0);
     CvSeq* contours = 0;
     cvFindContours(img, storage, &contours, sizeof(CvContour), CV_RETR_CCOMP);
     if (contours) {
         CvSeq* c = contours;
-        for (; c != NULL; c = c->h_next) {
+        for (int i = 10; c != NULL; c = c->h_next) {
             if (cvContourArea(c) < 2000) continue;//to be settled
-            cvDrawContours(waterseed, c, cvScalarAll(i += 5), cvScalarAll(i), 0, -1);
+            i += 5;
+            cvDrawContours(waterseed, c, cvScalarAll(i), cvScalarAll(i), 0, -1);
         }
     }
 
