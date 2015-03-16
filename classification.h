@@ -54,7 +54,7 @@
 #define CLASSIFICATION_H
 
 #include "mainwindow.h"
-#define deminsion 18
+
 
 class classification
 {

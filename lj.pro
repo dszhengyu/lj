@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     feature.cpp \
     classification.cpp \
     svm.cpp \
-    gram_schmidt_seg.cpp
+    gram_schmidt_seg.cpp \
+    annpredictor.cpp
 
 HEADERS  += mainwindow.h \
     opencv2qt.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     feature.h \
     classification.h \
     svm.h \
-    gram_schmidt_seg.h
+    gram_schmidt_seg.h \
+    annpredictor.h
 
 FORMS    += mainwindow.ui
 

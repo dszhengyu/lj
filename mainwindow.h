@@ -16,6 +16,10 @@
 #include "svm.h"
 #include "feature.h"
 #include "gram_schmidt_seg.h"
+#include "annpredictor.h"
+#include <ml.h>
+#include <vector>
+
 
 namespace Ui {
 class MainWindow;

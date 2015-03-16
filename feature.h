@@ -15,4 +15,6 @@ public:
     static QStringList getPAR(IplImage* src, int mask);//mask:细胞核1，细胞2，细胞质3
 };
 
+const int deminsion = 18;
+
 #endif // FEATURE_H
