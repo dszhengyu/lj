@@ -19,6 +19,4 @@ public:
     static vec2Ddouble calFeatureVec(IplImage* eachImage);
 };
 
-const int deminsion = 18;
-
 #endif // FEATURE_H

@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -24,7 +23,9 @@ void MainWindow::on_action_triggered()
     if (fileName.length() != 0) {
         //qDebug("%s", fileName.toLocal8Bit().data());
         IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
-        nclseg::seg(newImage);
+
+//        auto vec = nclseg::seg(newImage);
+//        analyse::showImg(vec[0], "test");
 
         QPixmap img("nuclei.png");
         ui->label->setScaledContents(true);
@@ -50,15 +51,15 @@ void MainWindow::on_actionSVM_predict_triggered()
     fileNames.clear();
 }
 
-//Zoom In
-void MainWindow::on_actionZoom_In_triggered()
+//train ANN
+void MainWindow::on_actionTrain_ANN_triggered()
 {
-    if (img.isNull())
-        ;
-    else {
-
-    }
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
+    AnnPredictor ann(fileNames);
+    ann.train();
+    ann.printMat();
 }
+
 
 //About
 void MainWindow::on_actionAbout_triggered()

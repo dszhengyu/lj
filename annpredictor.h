@@ -10,10 +10,11 @@ class AnnPredictor
 {
 public:
     explicit AnnPredictor(QStringList &files) :
-        fileNames(files),inputs(nullptr), outputs(nullptr), label(nullptr) {};
+        fileNames(files),inputs(nullptr), label(nullptr) {};
     void train() const;
     void predict() const;
-    ~AnnPredictor() {delete inputs; delete outputs; delete label;};
+    void printMat() const;
+    ~AnnPredictor() {delete inputs; delete label;};
 
 protected:
     void process() const;
@@ -21,10 +22,8 @@ private:
     QStringList fileNames;
     const char *modelName = "annmodel.dat";
     mutable cv::Mat *inputs;
-    mutable cv::Mat *outputs;
     mutable cv::Mat *label;
 };
 
-extern const int dimension;
 
 #endif // ANNPREDICTOR_H

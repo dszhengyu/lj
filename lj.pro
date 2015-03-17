@@ -46,7 +46,8 @@ INCLUDEPATH += /usr/local/include \
 
 LIBS += /usr/local/lib/libopencv_highgui.so \
         /usr/local/lib/libopencv_core.so    \
-        /usr/local/lib/libopencv_imgproc.so
+        /usr/local/lib/libopencv_imgproc.so\
+        /usr/local/lib/libopencv_ml.so
 
 ##windows
 #INCLUDEPATH += Z:\lj\opencv\build\include\

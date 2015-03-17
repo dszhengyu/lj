@@ -44,8 +44,6 @@ public:
 private slots:
     void on_action_triggered();
 
-    void on_actionZoom_In_triggered();
-
     void on_actionAbout_triggered();
 
     void on_actionTrain_SVM_triggered();
@@ -54,11 +52,15 @@ private slots:
 
     void on_actionGram_Schmidt_triggered();
 
+    void on_actionTrain_ANN_triggered();
+
 private:
     QImage img;
     QPixmap pic;
     int width, height;
     Ui::MainWindow *ui;
 };
+
+const int dimension = 18;
 
 #endif // MAINWINDOW_H
