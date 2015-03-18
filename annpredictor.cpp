@@ -1,7 +1,9 @@
 #include "annpredictor.h"
 
+//extern const int dimension;
+//extern const int classNumber;
 
-void AnnPredictor::process() const
+void AnnPredictor::process(bool debug) const
 {
     if (fileNames.length() < 1)
         throw std::runtime_error("No file input!");
@@ -22,7 +24,7 @@ void AnnPredictor::process() const
         double label = tmp.at(tmp.length() - 1).left(1).toDouble();
 
         //analyse each pic to get the features and push their correspond label into labelVec;
-        auto featureVec = feature::calFeatureVec(eachImage);
+        auto featureVec = feature::calFeatureVec(eachImage, debug);
         for (decltype(featureVec.size()) j = 0; j < featureVec.size(); j++) {
             labelVec.push_back(label);
         }
@@ -35,7 +37,7 @@ void AnnPredictor::process() const
     //process the Mat used for train and predict
     auto m = labelVec.size();
     inputs = new Mat(m, dimension, CV_64F);
-    label = new Mat(m, 6, CV_64F);
+    label = new Mat(m, classNumber, CV_64F);
 
     for (decltype(m) i = 0; i != m; ++i) {
         vector<double> &row = totalFeature.at(i);
@@ -50,9 +52,9 @@ void AnnPredictor::process() const
 
 }
 
-void AnnPredictor::train() const
+void AnnPredictor::train(bool debug) const
 {
-    process();
+    process(debug);
     CvANN_MLP bp;
     CvANN_MLP_TrainParams params;
     Mat layerSize = (cv::Mat_<int>(1, 3) << dimension, 2 * dimension, 6);

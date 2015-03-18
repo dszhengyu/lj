@@ -16,7 +16,11 @@ public:
     static vector<double> selectFeature(IplImage* src1, IplImage* src2);
     static vector<double> meanRgb(IplImage* src);
     static vector<double> getPAR(IplImage* src, int mask);//mask:细胞核1，细胞2，细胞质3
-    static vec2Ddouble calFeatureVec(IplImage* eachImage);
+    static vec2Ddouble calFeatureVec(IplImage* eachImage, bool debug = false);
 };
+
+
+const int dimension = 18;
+const int classNumber = 6;
 
 #endif // FEATURE_H

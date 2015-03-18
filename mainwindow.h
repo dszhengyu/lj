@@ -61,6 +61,6 @@ private:
     Ui::MainWindow *ui;
 };
 
-const int dimension = 18;
+const int waitTime = 0;
 
 #endif // MAINWINDOW_H

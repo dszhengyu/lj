@@ -24,8 +24,9 @@ void MainWindow::on_action_triggered()
         //qDebug("%s", fileName.toLocal8Bit().data());
         IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
 
-//        auto vec = nclseg::seg(newImage);
-//        analyse::showImg(vec[0], "test");
+        auto vec = analyse::process(newImage, true);
+        for (auto &elm : vec)
+            cvReleaseImage(&elm);
 
         QPixmap img("nuclei.png");
         ui->label->setScaledContents(true);
@@ -56,7 +57,7 @@ void MainWindow::on_actionTrain_ANN_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
     AnnPredictor ann(fileNames);
-    ann.train();
+    ann.train(true);
     ann.printMat();
 }
 

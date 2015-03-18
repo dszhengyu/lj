@@ -2,11 +2,13 @@
 #define ANALYSE_H
 
 #include "mainwindow.h"
+using std::vector;
 
 class analyse
 {
 public:
     analyse();
+    static vector<IplImage *> process(IplImage* img, bool debug = false);
     static int analyseV(IplImage* img);
     static IplImage* analyseHist(IplImage* channel, int *ptr_max_index); 
     static IplImage* splictB(const IplImage *img);

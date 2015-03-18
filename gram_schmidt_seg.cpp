@@ -120,8 +120,8 @@ IplImage *gram_schmidt_seg::getFinal(CvScalar w, IplImage *src)
     IplImage *dst = cvCreateImage(cvGetSize(src), IPL_DEPTH_64F, 1);
     int height=src->height;
     int width=src->width;
-    int steps = src->widthStep;
-    int stepd = dst->widthStep;
+//    int steps = src->widthStep;
+//    int stepd = dst->widthStep;
     int channels = src->nChannels;
     unsigned char *p = (unsigned char*)src->imageData;
     double *q = (double *)dst->imageData;

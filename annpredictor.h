@@ -11,13 +11,13 @@ class AnnPredictor
 public:
     explicit AnnPredictor(QStringList &files) :
         fileNames(files),inputs(nullptr), label(nullptr) {};
-    void train() const;
+    void train(bool debug = false) const;
     void predict() const;
     void printMat() const;
     ~AnnPredictor() {delete inputs; delete label;};
 
 protected:
-    void process() const;
+    void process(bool debug = false) const;
 private:
     QStringList fileNames;
     const char *modelName = "annmodel.dat";

@@ -5,9 +5,9 @@ feature::feature()
 
 }
 
-feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage)
+feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage, bool debug)
 {
-    auto imgVec = nclseg::seg(eachImage);
+    auto imgVec = analyse::process(eachImage, debug);
 
     //准备图片，整个细胞bgr， gray，轮廓分析备份，  细胞核bgr， gray，
     IplImage* wholeCell = imgVec[0];
@@ -82,6 +82,15 @@ feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage)
                 //qDebug("empty ROI");
                 continue;
             }
+
+//debug mode, display the pic
+            if (debug == true)  {
+                analyse::showImg(temp1, "核bgr");
+                analyse::showImg(temp3, "细胞bgr");
+                analyse::showImg(temp5, "质bgr");
+                cvWaitKey(waitTime * 2);
+                cvDestroyAllWindows();
+             }
 
             //如果细胞质面积为0，说明没有细胞质， 应该对BGR分量另外处理
             vector<double> eachFeature;

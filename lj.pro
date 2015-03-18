@@ -14,18 +14,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    opencv2qt.cpp \
-    nclseg.cpp \
-    analyse.cpp \
-    feature.cpp \
-    classification.cpp \
-    svm.cpp \
-    gram_schmidt_seg.cpp \
-    annpredictor.cpp
+        analyse.cpp \
+        feature.cpp \
+        classification.cpp \
+        svm.cpp \
+        gram_schmidt_seg.cpp \
+        annpredictor.cpp
 
 HEADERS  += mainwindow.h \
-    opencv2qt.h \
-    nclseg.h \
     analyse.h \
     feature.h \
     classification.h \
