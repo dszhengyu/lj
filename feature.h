@@ -1,9 +1,29 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
-#include "mainwindow.h"
+#include <QMainWindow>
+#include <QDebug>
+#include <QFileDialog>
+#include <highgui.h>
+#include <cv.h>
+#include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
+#include <iostream>
+#include <array>
+#include <ml.h>
+#include <vector>
+#include <stdexcept>
+#include <algorithm>
+#include <iterator>
+
+using std::cout;
+using std::array;
+using std::endl;
 using std::vector;
 using std::move;
+
+#include "analyse.h"
 
 class feature
 {

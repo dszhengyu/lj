@@ -53,19 +53,48 @@
 #ifndef CLASSIFICATION_H
 #define CLASSIFICATION_H
 
-#include "mainwindow.h"
+#include <QMainWindow>
+#include <QDebug>
+#include <QFileDialog>
+#include <highgui.h>
+#include <cv.h>
+#include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
+#include <iostream>
+#include <array>
+#include <ml.h>
+#include <vector>
+#include <stdexcept>
+#include <algorithm>
+#include <iterator>
 
+#include "feature.h"
+
+using std::cout;
+using std::array;
+using std::endl;
+using std::vector;
+using std::move;
+using std::vector;
+using cv::Mat;
 
 class classification
 {
 public:
-    classification();
-    static void trainSvm(QStringList fileNames);
-    static void svmPredict(QStringList fileNames);
-    static void trainSvm2(QStringList fileNames);
+    explicit classification(QStringList &files) :
+        fileNames(files),inputs(nullptr), label(nullptr) {};
+    virtual void train(bool debug = false) = 0;
+    virtual double predict(bool debug = false) = 0;
+    void printMat() const;
+    ~classification() {delete inputs; delete label;};
 
-//private:
-//     static struct svm_model *model;
+protected:
+    void process(bool debug = false);
+    QStringList fileNames;
+    const char *modelName = "annmodel.dat";
+    cv::Mat *inputs;
+    cv::Mat *label;
 };
 
 #endif // CLASSIFICATION_H

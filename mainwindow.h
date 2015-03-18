@@ -11,14 +11,6 @@
 #include <QTextStream>
 #include <iostream>
 #include <array>
-#include "nclseg.h"
-#include "analyse.h"
-#include "classification.h"
-#include "opencv2qt.h"
-#include "svm.h"
-#include "feature.h"
-#include "gram_schmidt_seg.h"
-#include "annpredictor.h"
 #include <ml.h>
 #include <vector>
 #include <stdexcept>
@@ -28,6 +20,10 @@
 using std::cout;
 using std::array;
 using std::endl;
+
+#include "annpredictor.h"
+#include "gram_schmidt_seg.h"
+#include "svmpredictor.h"
 
 namespace Ui {
 class MainWindow;
@@ -60,7 +56,5 @@ private:
     int width, height;
     Ui::MainWindow *ui;
 };
-
-const int waitTime = 0;
 
 #endif // MAINWINDOW_H

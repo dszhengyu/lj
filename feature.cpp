@@ -1,5 +1,7 @@
 #include "feature.h"
 
+extern int waitTime;
+
 feature::feature()
 {
 
@@ -67,29 +69,26 @@ feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage, bool debug)
             cvResetImageROI(nucleib);
 
             //开始提取特征， 用tempX图片
-            vector<double> t1, t2, t22, t3, t4, t5, t6;
-            t1 = feature::meanRgb(temp1);
-            t3 = feature::meanRgb(temp3);
-            t5 = feature::meanRgb(temp5);
+            auto t1 = feature::meanRgb(temp1);
+            auto t3 = feature::meanRgb(temp3);
+            auto t5 = feature::meanRgb(temp5);
 
-            t2 = feature::getPAR(temp2, 2);//4-d
-            t4 = feature::getPAR(temp4, 4);//3-d
-            t6 = vector<double> ({t2.at(1) - t2.at(1), t2.at(1) / t2.at(1)});
-            t22 = feature::getLBP(temp22);
+            auto t2 = feature::getPAR(temp2, 2);//4-d
+            auto t4 = feature::getPAR(temp4, 4);//3-d
+            auto t6 = vector<double> ({t2.at(1) - t2.at(1), t2.at(1) / t2.at(1)});
+            auto t22 = feature::getLBP(temp22);
 
             //细胞核面积为0，说明ROI设置有错，跳过，特征值不要啦
             if (t2.at(1) == 0) {
-                //qDebug("empty ROI");
                 continue;
             }
 
 //debug mode, display the pic
             if (debug == true)  {
-                analyse::showImg(temp1, "核bgr");
-                analyse::showImg(temp3, "细胞bgr");
-                analyse::showImg(temp5, "质bgr");
+                analyse::showImg(temp1, "Nuclei-bgr");
+                analyse::showImg(temp3, "Cell-bgr");
+                analyse::showImg(temp5, "Cryto-bgr");
                 cvWaitKey(waitTime * 2);
-                cvDestroyAllWindows();
              }
 
             //如果细胞质面积为0，说明没有细胞质， 应该对BGR分量另外处理
@@ -115,7 +114,6 @@ feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage, bool debug)
 
             //把当前细胞的特征值放入图片总特征值中
             features.push_back(eachFeature);
-
 
 //            analyse::showImg(temp1, "temp1");
 //            analyse::showImg(temp3, "temp3");

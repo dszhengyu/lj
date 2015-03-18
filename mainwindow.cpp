@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+int waitTime = 0;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,6 +34,7 @@ void MainWindow::on_action_triggered()
         ui->label->setPixmap(img);
 
         cvReleaseImage(&newImage);
+        cvDestroyAllWindows();
     }
 }
 
@@ -40,25 +42,32 @@ void MainWindow::on_action_triggered()
 void MainWindow::on_actionTrain_SVM_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
-//    classification::trainSvm(fileNames);
-    //fileNames.clear();
+    if (fileNames.length() != 0) {
+        SvmPredictor svm(fileNames);
+        svm.train();
+        svm.printMat();
+    }
 }
 
 //检测SVM训练结果
 void MainWindow::on_actionSVM_predict_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
-//    classification::svmPredict(fileNames);
-    fileNames.clear();
+    if (fileNames.length() != 0) {
+        SvmPredictor svm(fileNames);
+        svm.predict();
+    }
 }
 
 //train ANN
 void MainWindow::on_actionTrain_ANN_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
-    AnnPredictor ann(fileNames);
-    ann.train(true);
-    ann.printMat();
+    if (fileNames.length() != 0) {
+        AnnPredictor ann(fileNames);
+        ann.train(true);
+        ann.printMat();
+    }
 }
 
 

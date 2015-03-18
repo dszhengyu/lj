@@ -1,5 +1,7 @@
 #include "analyse.h"
 
+extern int waitTime;
+
 analyse::analyse()
 {
 }
@@ -98,7 +100,6 @@ vector<IplImage *> analyse::process(IplImage* img, bool debug)
         cvReleaseImage(&BW2);
         cvReleaseImage(&em);
         cvReleaseImage(&imcopy);
-        water.~Mat();
         cvReleaseImage(&water2);
 
     ////meanshift
@@ -374,12 +375,13 @@ IplImage* analyse::analyseCoutours(IplImage *img)
     return pic;
 }
 
-
+//caution!!! this fun may suffer from stackoverflow!!!
 IplImage* analyse::flood(IplImage *img, IplImage *im, int &isalot)
 {
     IplImage* em = cvCreateImage(cvGetSize(img), img->depth, 1);
     CvMemStorage* storage = cvCreateMemStorage(0);
     CvSeq* contours = 0;
+//here is the problem!
     CvPoint point[20];
     int count = 0;
     cvCopy(img, em);

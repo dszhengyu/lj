@@ -19,7 +19,8 @@ SOURCES += main.cpp\
         classification.cpp \
         svm.cpp \
         gram_schmidt_seg.cpp \
-        annpredictor.cpp
+        annpredictor.cpp \
+    svmpredictor.cpp
 
 HEADERS  += mainwindow.h \
     analyse.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     classification.h \
     svm.h \
     gram_schmidt_seg.h \
-    annpredictor.h
+    annpredictor.h \
+    svmpredictor.h
 
 FORMS    += mainwindow.ui
 
@@ -36,23 +38,24 @@ RC_ICONS = microscope.ico
 CONFIG += c++11
 
 ##linux
-INCLUDEPATH += /usr/local/include \
-                /usr/local/include/opencv \
-                /usr/local/include/opencv2
+#INCLUDEPATH += /usr/local/include \
+#                /usr/local/include/opencv \
+#                /usr/local/include/opencv2
 
-LIBS += /usr/local/lib/libopencv_highgui.so \
-        /usr/local/lib/libopencv_core.so    \
-        /usr/local/lib/libopencv_imgproc.so\
-        /usr/local/lib/libopencv_ml.so
+#LIBS += /usr/local/lib/libopencv_highgui.so \
+#        /usr/local/lib/libopencv_core.so    \
+#        /usr/local/lib/libopencv_imgproc.so\
+#        /usr/local/lib/libopencv_ml.so
 
-##windows
-#INCLUDEPATH += Z:\lj\opencv\build\include\
-#Z:\lj\opencv\build\include\opencv\
-#Z:\lj\opencv\build\include\opencv2
+#windows
+INCLUDEPATH += Z:\lj\opencv\build\include\
+Z:\lj\opencv\build\include\opencv\
+Z:\lj\opencv\build\include\opencv2
 
-#LIBS += Z:\lj\opencv\build\x64\vc12\lib\opencv_core249d.lib\
-#Z:\lj\opencv\build\x64\vc12\lib\opencv_highgui249d.lib\
-#Z:\lj\opencv\build\x64\vc12\lib\opencv_imgproc249d.lib
+LIBS += Z:\lj\opencv\build\x64\vc12\lib\opencv_core249d.lib\
+Z:\lj\opencv\build\x64\vc12\lib\opencv_highgui249d.lib\
+Z:\lj\opencv\build\x64\vc12\lib\opencv_imgproc249d.lib\
+Z:\lj\opencv\build\x64\vc12\lib\opencv_ml249d.lib
 
 
 RESOURCES += \
