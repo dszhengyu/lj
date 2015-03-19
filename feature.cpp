@@ -7,7 +7,7 @@ feature::feature()
 
 }
 
-feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage, bool debug)
+feature::vec2DFloat feature::calFeatureVec(IplImage* eachImage, bool debug)
 {
     auto imgVec = analyse::process(eachImage, debug);
 
@@ -28,7 +28,7 @@ feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage, bool debug)
 
 
     //返回值， n * dimension 维向量
-    feature::vec2Ddouble features;
+    feature::vec2DFloat features;
 
     //对整个细胞gray图进行轮廓分析，找出一个个细胞，然后ROI， 再接着处理
     CvMemStorage* storage = cvCreateMemStorage(0);
@@ -75,7 +75,7 @@ feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage, bool debug)
 
             auto t2 = feature::getPAR(temp2, 2);//4-d
             auto t4 = feature::getPAR(temp4, 4);//3-d
-            auto t6 = vector<double> ({t2.at(1) - t2.at(1), t2.at(1) / t2.at(1)});
+            auto t6 = vector<float> ({t2.at(1) - t2.at(1), t2.at(1) / t2.at(1)});
             auto t22 = feature::getLBP(temp22);
 
             //细胞核面积为0，说明ROI设置有错，跳过，特征值不要啦
@@ -92,7 +92,7 @@ feature::vec2Ddouble feature::calFeatureVec(IplImage* eachImage, bool debug)
              }
 
             //如果细胞质面积为0，说明没有细胞质， 应该对BGR分量另外处理
-            vector<double> eachFeature;
+            vector<float> eachFeature;
             auto insertItr = std::back_inserter(eachFeature);
             move(t2.begin(), t2.end(), insertItr);
             move(t1.begin(), t1.end(), insertItr);
@@ -172,7 +172,7 @@ void feature::formTable(unsigned char *table) // have some doubt
     }
 }
 
-vector<double> feature::getLBP(IplImage *src)
+vector<float> feature::getLBP(IplImage *src)
 {
     IplImage* dst = cvCreateImage(cvGetSize(src), 8, 1);
     double histogram[256] = {0};
@@ -210,7 +210,7 @@ vector<double> feature::getLBP(IplImage *src)
         }
     }
 
-    double mean, energy, entropy, variance;
+    float mean, energy, entropy, variance;
     mean = variance = energy = entropy = 0;
     size = width * height;
     for(i = 0; i < 256; i++)
@@ -229,7 +229,7 @@ vector<double> feature::getLBP(IplImage *src)
         variance += (i - mean) * (i - mean) * histogram[i];
 
     //qDebug("entropy: %lf, variance: %lf", entropy, variance); 
-    vector<double> lbpFeature({mean, energy, variance});
+    vector<float> lbpFeature({mean, energy, variance});
 
     //analyse::showImg(dst, "lbp");
     cvReleaseImage(&dst);
@@ -239,9 +239,9 @@ vector<double> feature::getLBP(IplImage *src)
 }
 
 
-vector<double> feature::meanRgb(IplImage *src)
+vector<float> feature::meanRgb(IplImage *src)
 {
-    double b, g, r;
+    float b, g, r;
     int height=src->height;
     int width=src->width;
     int step = src->widthStep;
@@ -271,14 +271,14 @@ vector<double> feature::meanRgb(IplImage *src)
     r /= size;
 
     //qDebug("%lf, %lf, %lf", b, g, r);
-    vector<double> mean({b, g, r});
+    vector<float> mean({b, g, r});
 
     return mean;
 }
 
-vector<double> feature::getPAR(IplImage *src, int mask)
+vector<float> feature::getPAR(IplImage *src, int mask)
 {
-    double perimeter, area, rc, i;
+    float perimeter, area, rc, i;
     perimeter = area = i = 0;
     CvMemStorage* storage = cvCreateMemStorage(0);
     CvSeq* contours = 0;
@@ -301,7 +301,7 @@ vector<double> feature::getPAR(IplImage *src, int mask)
         rc = perimeter * perimeter / (4 * 3.14 * area);
 
     //form feature based on mask
-    vector<double> PAR({perimeter, area, rc});
+    vector<float> PAR({perimeter, area, rc});
 
     if (mask == 2) {
         PAR.push_back(i);

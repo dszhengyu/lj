@@ -20,7 +20,8 @@ SOURCES += main.cpp\
         svm.cpp \
         gram_schmidt_seg.cpp \
         annpredictor.cpp \
-    svmpredictor.cpp
+    svmpredictor.cpp \
+    messagebox.cpp
 
 HEADERS  += mainwindow.h \
     analyse.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     svm.h \
     gram_schmidt_seg.h \
     annpredictor.h \
-    svmpredictor.h
+    svmpredictor.h \
+    messagebox.h
 
 FORMS    += mainwindow.ui
 

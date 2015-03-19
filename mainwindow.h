@@ -24,6 +24,7 @@ using std::endl;
 #include "annpredictor.h"
 #include "gram_schmidt_seg.h"
 #include "svmpredictor.h"
+#include "messagebox.h"
 
 namespace Ui {
 class MainWindow;
@@ -49,6 +50,8 @@ private slots:
     void on_actionGram_Schmidt_triggered();
 
     void on_actionTrain_ANN_triggered();
+
+    void on_actionANN_predict_triggered();
 
 private:
     QImage img;

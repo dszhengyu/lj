@@ -55,9 +55,7 @@ double SvmPredictor::predict(bool debug)
     if (!model) {
         model = svm_load_model("svm_model.txt");
         if (!model) {
-            QMessageBox aboutMessage(QMessageBox::NoIcon, "出错", "请先训练SVM");
-            aboutMessage.setIconPixmap(QPixmap("images/error.png"));
-            aboutMessage.exec();
+            MessageBox ("Train SVM first!");
             return -1;
         }
     }
@@ -73,10 +71,7 @@ double SvmPredictor::predict(bool debug)
     QStringList report;
     report << "total pictures:" << QString::number(m) << "\naccurate predict: " << QString::number(hit)
            << "\naccuracy: " << QString::number(hit * 100 / m) << "%";
-    QMessageBox resultMessage(QMessageBox::NoIcon, "结果", report.join(""));
-    resultMessage.setIconPixmap(QPixmap("images/vector.png"));
-    resultMessage.exec();
-    report.clear();
+    MessageBox (report.join(""), "SVM predict result", "images/vector.png");
 
     return ((m - hit) / m);
 }
@@ -93,10 +88,10 @@ void SvmPredictor::castToArray(bool debug)
 
     for (int i = 0; i < m; ++i) {
         //对标签处理
-        y[i] = label->at<double>(i, 0);
+        y[i] = label->at<float>(i, 0);
         for (int j = 0; j < dimension; ++j) {
             x_space[i * (dimension + 1) + j].index = j + 1;
-            x_space[i * (dimension + 1) + j].value = inputs->at<double>(i, j);
+            x_space[i * (dimension + 1) + j].value = inputs->at<float>(i, j);
         }
         x_space[i * (dimension + 1) + dimension].index = -1;
         x_space[i * (dimension + 1) + dimension].value = 0;

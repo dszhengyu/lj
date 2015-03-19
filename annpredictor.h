@@ -7,10 +7,13 @@ class AnnPredictor : public classification
 {
 public:
     explicit AnnPredictor(QStringList &files) :
-        classification(files) {};
+        classification(files),
+        bp(nullptr){};
     virtual void train(bool debug = false);
     virtual double predict(bool debug = false);
     ~AnnPredictor() {};
+private:
+    CvANN_MLP *bp;
 };
 
 

@@ -70,6 +70,7 @@
 #include <iterator>
 
 #include "feature.h"
+#include "messagebox.h"
 
 using std::cout;
 using std::array;
@@ -86,15 +87,17 @@ public:
         fileNames(files),inputs(nullptr), label(nullptr) {};
     virtual void train(bool debug = false) = 0;
     virtual double predict(bool debug = false) = 0;
+    static void printMat(cv::Mat *m, int rL = -1, int cL = -1);
     void printMat() const;
     ~classification() {delete inputs; delete label;};
 
 protected:
     void process(bool debug = false);
     QStringList fileNames;
-    const char *modelName = "annmodel.dat";
+    const char *modelName = "annmodel.txt";
     cv::Mat *inputs;
     cv::Mat *label;
+    const int labelCol = 1;
 };
 
 #endif // CLASSIFICATION_H

@@ -5,8 +5,8 @@ void classification::process(bool debug)
     if (fileNames.length() < 1)
         throw std::runtime_error("No file input!");
 
-    vector<double> labelVec;
-    vector<vector<double>> totalFeature;
+    vector<float> labelVec;
+    vector<vector<float>> totalFeature;
 
     for (int i = 0; i < fileNames.length(); i++) {
 
@@ -18,7 +18,7 @@ void classification::process(bool debug)
         //get the label, first character of the filename
         //but first, extract pure file name from full path name, eg: home/lj/.../1nuclei.jpg"
         QStringList tmp = eachFile.split("/");
-        double label = tmp.at(tmp.length() - 1).left(1).toDouble();
+        float label = tmp.at(tmp.length() - 1).left(1).toDouble();
 
         //analyse each pic to get the features and push their correspond label into labelVec;
         auto featureVec = feature::calFeatureVec(eachImage, debug);
@@ -33,31 +33,37 @@ void classification::process(bool debug)
 
     //process the Mat used for train and predict
     auto m = labelVec.size();
-    inputs = new Mat(m, dimension, CV_64F);
-    label = new Mat(m, classNumber, CV_64F);
+    inputs = new Mat(m, dimension, CV_32FC1);
+    label = new Mat(m, labelCol, CV_32FC1);
 
     for (int i = 0; i < m; ++i) {
-        vector<double> &row = totalFeature.at(i);
+        vector<float> &row = totalFeature.at(i);
         for (int j = 0; j < dimension; ++j) {
-            inputs->at<double>(i, j) = row.at(j);
+            inputs->at<float>(i, j) = row.at(j);
         }
 
-        for(int j = 0; j < classNumber; ++j)
-            label->at<double>(i, j) = labelVec.at(i);
+        for(int j = 0; j < labelCol; ++j)
+            label->at<float>(i, j) = labelVec.at(i);
+    }
+}
+
+void classification::printMat(cv::Mat *m, int rL, int cL)
+{
+    rL = rL > 0 ? rL : m->rows;
+    cL = cL > 0 ? cL : m->cols;
+    for (int i = 0; i < rL; i++) {
+        for (int j = 0; j < cL; j++)
+            cout << m->at<float>(i, j) << " " ;
+        cout << endl;
     }
 }
 
 void classification::printMat() const
 {
     cout << "inputs Mat!" << endl;
-    for (int i = 0; i < inputs->rows; i++) {
-        for (int j = 0; j < inputs->cols; j++)
-            cout << inputs->at<double>(i, j) << " " ;
-        cout << endl;
-    }
+    printMat(inputs);
 
     cout << endl << "labels Mat" << endl;
-    for (int i = 0; i < label->rows; i++)
-        cout << label->at<double>(i, 0) << endl;
+    printMat(label, -1, 1);
 
 }

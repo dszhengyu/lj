@@ -28,15 +28,15 @@ using std::move;
 class feature
 {
 public:
-    typedef vector<vector<double> > vec2Ddouble;
+    typedef vector<vector<float> > vec2DFloat;
     feature();
     static int getHop(unsigned char i);
     static void formTable(unsigned char *table);
-    static vector<double> getLBP(IplImage* src);
-    static vector<double> selectFeature(IplImage* src1, IplImage* src2);
-    static vector<double> meanRgb(IplImage* src);
-    static vector<double> getPAR(IplImage* src, int mask);//mask:细胞核1，细胞2，细胞质3
-    static vec2Ddouble calFeatureVec(IplImage* eachImage, bool debug = false);
+    static vector<float> getLBP(IplImage* src);
+    static vector<float> selectFeature(IplImage* src1, IplImage* src2);
+    static vector<float> meanRgb(IplImage* src);
+    static vector<float> getPAR(IplImage* src, int mask);//mask:细胞核1，细胞2，细胞质3
+    static vec2DFloat calFeatureVec(IplImage* eachImage, bool debug = false);
 };
 
 
