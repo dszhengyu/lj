@@ -140,7 +140,7 @@
      <x>0</x>
      <y>0</y>
      <width>761</width>
-     <height>27</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">
@@ -150,6 +150,7 @@
     <addaction name="action"/>
     <addaction name="action_S"/>
     <addaction name="actionGram_Schmidt"/>
+    <addaction name="action_2"/>
    </widget>
    <widget class="QMenu" name="menu_T">
     <property name="title">
@@ -187,8 +188,8 @@
     <bool>false</bool>
    </attribute>
    <addaction name="action"/>
-   <addaction name="actionGram_Schmidt"/>
    <addaction name="action_S"/>
+   <addaction name="action_2"/>
    <addaction name="separator"/>
    <addaction name="actionPredict_SVM"/>
    <addaction name="actionPredict_ANN"/>
@@ -198,6 +199,7 @@
    <addaction name="actionTrain_ANN"/>
    <addaction name="actionANN_predict"/>
    <addaction name="separator"/>
+   <addaction name="actionGram_Schmidt"/>
   </widget>
   <action name="action">
    <property name="icon">
@@ -320,6 +322,15 @@
    </property>
    <property name="text">
     <string>Gram-Schmidt</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="icon">
+    <iconset resource="pic.qrc">
+     <normaloff>:/images/images/pictureSelection.png</normaloff>:/images/images/pictureSelection.png</iconset>
+   </property>
+   <property name="text">
+    <string>选择图片</string>
    </property>
   </action>
  </widget>

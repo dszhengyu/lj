@@ -25,7 +25,7 @@ void MainWindow::on_action_triggered()
         //qDebug("%s", fileName.toLocal8Bit().data());
         IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
 
-        auto vec = analyse::process(newImage, true);
+        auto vec = analyse::process(newImage);
         for (auto &elm : vec)
             cvReleaseImage(&elm);
 
@@ -65,7 +65,7 @@ void MainWindow::on_actionTrain_ANN_triggered()
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
     if (fileNames.length() != 0) {
         AnnPredictor ann(fileNames);
-        ann.train();
+        ann.train(true);
         ann.printMat();
     }
 }
@@ -105,10 +105,19 @@ void MainWindow::on_actionGram_Schmidt_triggered()
         IplImage* newImage = cvLoadImage(fileName.toLocal8Bit().data());
         gram_schmidt_seg::execGs(newImage);
 
-//        QPixmap img("nuclei.jpg");
-//        ui->label->setScaledContents(true);
-//        ui->label->setPixmap(img);
+        QPixmap img("nuclei.jpg");
+        ui->label->setScaledContents(true);
+        ui->label->setPixmap(img);
 
         cvReleaseImage(&newImage);
+    }
+}
+
+void MainWindow::on_action_2_triggered()
+{
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
+
+    if(fileNames.size() != 0) {
+        PictureSelection::select(fileNames);
     }
 }

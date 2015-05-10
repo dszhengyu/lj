@@ -102,10 +102,10 @@ vector<IplImage *> analyse::process(IplImage* img, bool debug)
         cvReleaseImage(&imcopy);
         cvReleaseImage(&water2);
 
-    ////meanshift
-    //    cvCvtColor(water3, luv, CV_BGR2Luv);
-    //    cvPyrMeanShiftFiltering(luv, mean, 30, 30);
-    //    cvCvtColor(mean, water3, CV_Luv2BGR);
+//meanshift
+//        cvCvtColor(water3, luv, CV_BGR2Luv);
+//        cvPyrMeanShiftFiltering(luv, mean, 30, 30);
+//        cvCvtColor(mean, water3, CV_Luv2BGR);
     //    //analyse::showImg(water3, "water3-after");
 
         cvCvtColor(water3, waterb, CV_BGR2GRAY);
@@ -126,7 +126,7 @@ vector<IplImage *> analyse::process(IplImage* img, bool debug)
         if (debug == true) {
             analyse::showImg(water3, "wholeCell");
             analyse::showImg(water5, "nuclei");
-            cvWaitKey(waitTime);
+            //cvWaitKey(waitTime);
         }
 
     cvSaveImage("wholeCell.png", water3);
@@ -136,7 +136,7 @@ vector<IplImage *> analyse::process(IplImage* img, bool debug)
 //    cvReleaseImage(&water3);
 //    cvReleaseImage(&water5);
 
-    return vector<IplImage*> ({water3, water5});
+    return vector<IplImage*> {water3, water5};
 }
 
 

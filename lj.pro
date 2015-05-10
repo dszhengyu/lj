@@ -21,7 +21,8 @@ SOURCES += main.cpp\
         gram_schmidt_seg.cpp \
         annpredictor.cpp \
     svmpredictor.cpp \
-    messagebox.cpp
+    messagebox.cpp \
+    pictureselection.cpp
 
 HEADERS  += mainwindow.h \
     analyse.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     gram_schmidt_seg.h \
     annpredictor.h \
     svmpredictor.h \
-    messagebox.h
+    messagebox.h \
+    pictureselection.h
 
 FORMS    += mainwindow.ui
 

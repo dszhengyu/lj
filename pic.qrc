@@ -15,5 +15,6 @@
         <file>images/zoom1.png</file>
         <file>images/zoom2.png</file>
         <file>images/Gram-Schmidt.png</file>
+        <file>images/pictureSelection.png</file>
     </qresource>
 </RCC>

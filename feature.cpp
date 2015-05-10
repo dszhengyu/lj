@@ -231,7 +231,7 @@ vector<float> feature::getLBP(IplImage *src)
     //qDebug("entropy: %lf, variance: %lf", entropy, variance); 
     vector<float> lbpFeature({mean, energy, variance});
 
-    //analyse::showImg(dst, "lbp");
+//    analyse::showImg(dst, "lbp");
     cvReleaseImage(&dst);
 
     //qDebug("lbp: %s", lbpFeature.join("'").toLocal8Bit().data());
