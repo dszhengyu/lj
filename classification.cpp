@@ -5,9 +5,6 @@ void classification::process(bool debug)
     if (fileNames.length() < 1)
         throw std::runtime_error("No file input!");
 
-    vector<float> labelVec;
-    vector<vector<float>> totalFeature;
-
     for (int i = 0; i < fileNames.length(); i++) {
 
         //tackle the path name && open the pic
@@ -32,7 +29,7 @@ void classification::process(bool debug)
     }
 
     //process the Mat used for train and predict
-    auto m = labelVec.size();
+    int m = static_cast<int>(labelVec.size());
     inputs = new Mat(m, dimension, CV_32FC1);
     label = new Mat(m, labelCol, CV_32FC1);
 
@@ -45,6 +42,9 @@ void classification::process(bool debug)
         for(int j = 0; j < labelCol; ++j)
             label->at<float>(i, j) = labelVec.at(i);
     }
+
+    //save features
+    saveFeatures();
 }
 
 void classification::printMat(cv::Mat *m, int rL, int cL)
@@ -66,4 +66,19 @@ void classification::printMat() const
     cout << endl << "labels Mat" << endl;
     printMat(label, -1, 1);
 
+}
+void classification::saveFeatures() const
+{
+    std::ofstream featureFile(featureFileName);
+    for(auto &row : totalFeature) {
+        for (auto &perItem : row)
+            featureFile << perItem << ',';
+        featureFile << '\n';
+    }
+    featureFile.close();
+
+    std::ofstream labelFile(labelFileName);
+    for (auto &label : labelVec)
+        labelFile << label << '\n';
+    labelFile.close();
 }

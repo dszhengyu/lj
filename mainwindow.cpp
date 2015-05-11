@@ -65,7 +65,7 @@ void MainWindow::on_actionTrain_ANN_triggered()
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Image"), ".", tr("Image Files(*.png *.jpg *.jpeg *.bmg)"));
     if (fileNames.length() != 0) {
         AnnPredictor ann(fileNames);
-        ann.train(true);
+        ann.train(false);
         ann.printMat();
     }
 }

@@ -35,7 +35,7 @@ void SvmPredictor::train(bool debug)
 
     //构建model并保存
     model = svm_train(&prob, &param);
-    svm_save_model("svm_model.txt", model);
+    svm_save_model(modelName, model);
 
     //释放内存
     svm_destroy_param(&param);
@@ -53,7 +53,7 @@ double SvmPredictor::predict(bool debug)
     castToArray();
 
     if (!model) {
-        model = svm_load_model("svm_model.txt");
+        model = svm_load_model(modelName);
         if (!model) {
             MessageBox ("Train SVM first!");
             return -1;

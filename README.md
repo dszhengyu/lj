@@ -1,4 +1,25 @@
 #LJ
+
+---
+
+##update log
+changed a lot since 2015-3-16
+
+reconstruct the classification, add ann, rewrite classification as virtual class, which derived
+annpredictor and svmpredictor
+
+add poctureSelection, no-willingly, just to compensate for the image process part
+
+using python to debug the machine learning part
+thx [scikit-learn](http://scikit-learn.org/stable/index.html) again
+
+sth to-do:
+1. make image part better
+2. debug the ml part
+3. the new idea, use cluster to split white cell and other things, include background and red cell
+
+---
+
 ##summerize the work before
 
 environment:  

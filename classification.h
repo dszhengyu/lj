@@ -62,12 +62,15 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
+#include <fstream>
 #include <array>
 #include <ml.h>
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
 #include <iterator>
+#include <memory>
+#include <string>
 
 #include "feature.h"
 #include "messagebox.h"
@@ -79,25 +82,34 @@ using std::vector;
 using std::move;
 using std::vector;
 using cv::Mat;
+using std::string;
 
 class classification
 {
 public:
     explicit classification(QStringList &files) :
-        fileNames(files),inputs(nullptr), label(nullptr) {};
+        fileNames(files),inputs(nullptr), label(nullptr),
+        featureFileName("X.csv"),
+        labelFileName("y.csv") {};
     virtual void train(bool debug = false) = 0;
     virtual double predict(bool debug = false) = 0;
     static void printMat(cv::Mat *m, int rL = -1, int cL = -1);
     void printMat() const;
     ~classification() {delete inputs; delete label;};
+    void saveFeatures() const;
 
 protected:
     void process(bool debug = false);
     QStringList fileNames;
-    const char *modelName = "annmodel.txt";
+    const char *modelName = "model.txt";
     cv::Mat *inputs;
     cv::Mat *label;
     const int labelCol = 1;
+private:
+    vector<vector<float>> totalFeature;
+    vector<float> labelVec;
+    const string featureFileName;
+    const string labelFileName;
 };
 
 #endif // CLASSIFICATION_H

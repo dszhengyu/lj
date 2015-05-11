@@ -11,9 +11,10 @@ public:
         bp(nullptr){};
     virtual void train(bool debug = false);
     virtual double predict(bool debug = false);
-    ~AnnPredictor() {};
+    ~AnnPredictor() {delete bp;};
 private:
     CvANN_MLP *bp;
+    const char *modelName = "annModel.txt";
 };
 
 

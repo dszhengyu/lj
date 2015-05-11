@@ -23,6 +23,7 @@ private:
     struct svm_node ** x;
     struct svm_node *x_space;
     struct svm_model *model;
+    const char *modelName = "svmModel.txt";
 };
 
 #endif // SVMPREDICTOR_H
